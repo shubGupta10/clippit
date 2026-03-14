@@ -4,8 +4,7 @@ import dotenv from "dotenv"
 dotenv.config();
 
 const connection = {
-    host: process.env.REDIS_HOST || "localhost",
-    port: parseInt(process.env.REDIS_PORT || "6379")
+    url: process.env.REDIS_URL || "redis://localhost:6379"
 }
 
 export const embeddingQueue = new Queue("embedding", {

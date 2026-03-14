@@ -3,8 +3,7 @@ import { emeddingProcessor } from './embedding.processor';
 
 const worker = new Worker('embedding', emeddingProcessor, {
     connection: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
+        url: process.env.REDIS_URL || 'redis://localhost:6379',
     },
     concurrency: 5, // process 5 jobs at a time
 });

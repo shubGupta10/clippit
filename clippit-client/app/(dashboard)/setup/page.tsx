@@ -3,12 +3,11 @@
 import { Type, Image as ImageIcon, Link2 } from "lucide-react";
 
 export default function SetupPage() {
-  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const bookmarkletCode = `javascript:(function(){window.open('${appUrl}/bookmarklet?url='+encodeURIComponent(window.location.href)+'&title='+encodeURIComponent(document.title),'clippitSave','width=400,height=500');})()`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const bookmarkletCode = `javascript:(function(){var w=window.open('${appUrl}/bookmarklet?url='+encodeURIComponent(window.location.href)+'&title='+encodeURIComponent(document.title),'clippitSave','width=400,height=500,left='+(screen.width/2-200)+',top='+(screen.height/2-250)+',resizable=yes,scrollbars=yes');if(!w||w.closed||typeof w.closed==='undefined'){alert('Please allow popups for this site to use Clippit');}})()`;
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground tracking-tight">Get Started with Clippit</h1>
         <p className="text-muted-foreground mt-2 text-base">Follow these steps to start saving anything from the web</p>
@@ -37,7 +36,7 @@ export default function SetupPage() {
           />
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Tip: In Chrome, press <kbd className="px-1 py-0.5 bg-muted rounded border border-border text-xs font-mono">Ctrl+Shift+B</kbd> to show your bookmarks bar
+          Tip: In Chrome, press <kbd className="px-1 py-0.5 bg-muted rounded border border-border text-xs font-mono">Ctrl+Shift+B</kbd> to show your bookmarks bar. Then allow popups when Chrome asks.
         </p>
       </div>
 

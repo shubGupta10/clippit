@@ -1,7 +1,9 @@
+"use client";
+
 import { Type, Image as ImageIcon, Link2 } from "lucide-react";
 
 export default function SetupPage() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = typeof window !== "undefined" ? window.location.origin : "";
   const bookmarkletCode = `javascript:(function(){window.open('${appUrl}/bookmarklet?url='+encodeURIComponent(window.location.href)+'&title='+encodeURIComponent(document.title),'clippitSave','width=400,height=500');})()`;
 
   return (

@@ -1,0 +1,65 @@
+import { Response } from "express";
+import { asyncWrapper, AuthRequest } from "../../lib/asyncWrapper";
+import AppError from "../../lib/AppError";
+import { ItemService } from "./item.service";
+
+const createItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
+    const clerkId = req.userId;
+    if (!clerkId) throw new AppError('Unauthorized', 401);
+
+    const itemData = {
+        ...req.body,
+        clerkId,
+    };
+
+    const item = await ItemService.createItem(itemData, clerkId);
+    res.status(201).json({ success: true, data: item });
+});
+
+
+const fetchUserItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
+    const clerkId = req.userId;
+    if (!clerkId) throw new AppError('Unauthorized', 401);
+
+    const items = await ItemService.fetchUserItem(clerkId);
+
+    res.status(200).json({
+        success: true,
+        count: items.length,
+        data: items,
+    });
+});
+
+const getItemById = asyncWrapper(async (req: AuthRequest, res: Response) => {
+    const clerkId = req.userId;
+    if (!clerkId) throw new AppError('Unauthorized', 401);
+
+    const item = await ItemService.getItemById(req.params.id as string);
+
+    // Ownership check — service fetches by id only, so verify the item belongs to this user
+    if (item.clerkId !== clerkId) throw new AppError('Unauthorized', 401);
+
+    res.status(200).json({
+        success: true,
+        data: item,
+    });
+});
+
+const deleteItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
+    const clerkId = req.userId;
+    if (!clerkId) throw new AppError('Unauthorized', 401);
+
+    await ItemService.deleteItem(req.params.id as string, clerkId);
+
+    res.status(200).json({
+        success: true,
+        message: 'Item deleted successfully',
+    });
+});
+
+export {
+    createItem,
+    fetchUserItem,
+    getItemById,
+    deleteItem
+}

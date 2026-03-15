@@ -71,10 +71,42 @@ const editItem = asyncWrapper(
     }
 )
 
+const clearAllItems = asyncWrapper(
+    async (req: AuthRequest, res: Response) => {
+        const clerkId = req.userId;
+        if (!clerkId) throw new AppError("Unauthorized", 401)
+
+        const result = await ItemService.clearAllItems(clerkId);
+
+        res.status(200).json({
+            success: true,
+            message: "All items deleted successfully",
+            data: result
+        })
+    }
+)
+
+const deleteAccount = asyncWrapper(
+    async (req: AuthRequest, res: Response) => {
+        const clerkId = req.userId;
+        if (!clerkId) throw new AppError("Unauthorized", 401)
+
+        const result = await ItemService.deleteAccount(clerkId);
+
+        res.status(200).json({
+            success: true,
+            message: "Account deleted successfully",
+            data: result
+        })
+    }
+)
+
 export {
     createItem,
     fetchUserItem,
     getItemById,
     deleteItem,
-    editItem
+    editItem,
+    clearAllItems,
+    deleteAccount
 }

@@ -46,7 +46,7 @@ export default function SettingsPage() {
   const handleClearItems = async () => {
     setIsDeletingItems(true);
     try {
-      await api.delete("/api/items/clear-all");
+      await api.delete("/api/items/clear-all-items");
       toast.success("All items deleted");
       // Optional: force a refresh of the page or router to clear any cached items elsewhere
       window.location.reload();
@@ -61,7 +61,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      await api.delete("/api/user/delete-account");
+      await api.delete("/api/items/delete-account");
       toast.success("Account deleted");
       await signOut({ redirectUrl: "/" });
     } catch (error) {
@@ -226,7 +226,7 @@ export default function SettingsPage() {
                 </div>
                 
                 <AlertDialog>
-                  <AlertDialogTrigger className="w-full border border-destructive/30 text-destructive bg-destructive/5 hover:bg-destructive hover:text-destructive-foreground rounded-xl px-4 py-2.5 text-sm font-bold transition-all active:scale-[0.98] shadow-sm">
+                  <AlertDialogTrigger className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl px-4 py-3 text-sm font-bold transition-all active:scale-[0.98] shadow-lg shadow-destructive/10 border border-white/10">
                     Delete All Data
                   </AlertDialogTrigger>
                   <AlertDialogContent className="rounded-2xl">
@@ -262,7 +262,7 @@ export default function SettingsPage() {
                 </div>
                 
                 <AlertDialog>
-                  <AlertDialogTrigger className="w-full border border-destructive/10 text-destructive/60 hover:text-destructive hover:bg-destructive/10 rounded-xl px-4 py-2.5 text-sm font-medium transition-all active:scale-[0.98]">
+                  <AlertDialogTrigger className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl px-4 py-3 text-sm font-bold transition-all active:scale-[0.98] shadow-lg shadow-destructive/10 border border-white/10">
                     Delete My Account
                   </AlertDialogTrigger>
                   <AlertDialogContent className="rounded-2xl">

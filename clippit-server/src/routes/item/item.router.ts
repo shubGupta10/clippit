@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth";
-import { createItem, fetchUserItem, getItemById, deleteItem, editItem } from "../../modules/item/item.controller";
+import { createItem, fetchUserItem, getItemById, deleteItem, editItem, clearAllItems, deleteAccount } from "../../modules/item/item.controller";
 
 const router = Router();
 
@@ -14,6 +14,18 @@ router.get(
     "/get-user-items",
     requireAuth,
     fetchUserItem
+)
+
+router.delete(
+    "/clear-all-items",
+    requireAuth,
+    clearAllItems
+)
+
+router.delete(
+    "/delete-account",
+    requireAuth,
+    deleteAccount
 )
 
 router.get(

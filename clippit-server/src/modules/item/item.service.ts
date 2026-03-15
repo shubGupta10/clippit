@@ -117,11 +117,40 @@ const updateItemEmbedding = async (
     return item;
 };
 
+const clearAllItems = async (clerkId: string) => {
+    if (!clerkId) {
+        throw new AppError("Unauthorized", 401)
+    }
+
+    const result = await Item.deleteMany({
+        clerkId
+    })
+    if (result.deletedCount === 0) {
+        throw new AppError("No Items found to delete", 404)
+    }
+
+    return result;
+}
+
+const deleteAccount = async (clerkId: string) => {
+    if (!clerkId) {
+        throw new AppError("Unauthorized", 401)
+    }
+
+    await Item.deleteMany({ clerkId });
+    const user = await User.findOneAndDelete({ clerkId });
+    if (!user) throw new AppError("User not found", 404);
+
+    return user;
+}
+
 export const ItemService = {
     createItem,
     fetchUserItem,
     getItemById,
     deleteItem,
     updateItemEmbedding,
-    editItem
+    editItem,
+    clearAllItems,
+    deleteAccount
 }

@@ -30,14 +30,12 @@ export default function ItemOverviewPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const [editingNote, setEditingNote] = useState(false);
+  // Edit state
+  const [isEditing, setIsEditing] = useState(false);
   const [noteValue, setNoteValue] = useState("");
-  const [isSavingNote, setIsSavingNote] = useState(false);
-
-  const [editingTags, setEditingTags] = useState(false);
   const [tagsValue, setTagsValue] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
   const [newTag, setNewTag] = useState("");
-  const [isSavingTags, setIsSavingTags] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -81,28 +79,23 @@ export default function ItemOverviewPage() {
     return res.json();
   };
 
-  const handleSaveNote = async () => {
-    setIsSavingNote(true);
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
-      await patch({ note: noteValue, tags: item?.tags });
-      setItem((prev) => prev ? { ...prev, note: noteValue } : prev);
-      setEditingNote(false);
+      await patch({ note: noteValue, tags: tagsValue });
+      setItem((prev) => prev ? { ...prev, note: noteValue, tags: tagsValue } : prev);
+      setIsEditing(false);
     } catch {
+      // ignore
     } finally {
-      setIsSavingNote(false);
+      setIsSaving(false);
     }
   };
 
-  const handleSaveTags = async () => {
-    setIsSavingTags(true);
-    try {
-      await patch({ note: item?.note, tags: tagsValue });
-      setItem((prev) => prev ? { ...prev, tags: tagsValue } : prev);
-      setEditingTags(false);
-    } catch {
-    } finally {
-      setIsSavingTags(false);
-    }
+  const handleCancel = () => {
+    setNoteValue(item?.note || "");
+    setTagsValue(item?.tags || []);
+    setIsEditing(false);
   };
 
   const handleDelete = async () => {
@@ -169,14 +162,45 @@ export default function ItemOverviewPage() {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-          <button
-            onClick={() => setShowDeleteDialog(true)}
-            disabled={isDeleting}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors border border-transparent hover:border-destructive/30"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </button>
+          
+          <div className="flex items-center gap-2">
+            {!isEditing ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-foreground hover:bg-muted border border-border rounded-lg transition-colors"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCancel}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <Check className="w-4 h-4" />
+                  {isSaving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            )}
+            
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={isDeleting}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors border border-transparent hover:border-destructive/30"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
         </div>
 
         <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
@@ -219,32 +243,8 @@ export default function ItemOverviewPage() {
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Note</span>
-                {!editingNote ? (
-                  <button
-                    onClick={() => setEditingNote(true)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted"
-                  >
-                    <Pencil className="w-3 h-3" /> Edit
-                  </button>
-                ) : (
-                  <div className="flex gap-1">
-                    <button
-                      onClick={handleSaveNote}
-                      disabled={isSavingNote}
-                      className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 px-2 py-1 rounded-md hover:bg-primary/10 transition-colors"
-                    >
-                      <Check className="w-3 h-3" /> {isSavingNote ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      onClick={() => { setNoteValue(item.note || ""); setEditingNote(false); }}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors"
-                    >
-                      <X className="w-3 h-3" /> Cancel
-                    </button>
-                  </div>
-                )}
               </div>
-              {editingNote ? (
+              {isEditing ? (
                 <textarea
                   value={noteValue}
                   onChange={(e) => setNoteValue(e.target.value)}
@@ -266,40 +266,16 @@ export default function ItemOverviewPage() {
                   <Tag className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tags</span>
                 </div>
-                {!editingTags ? (
-                  <button
-                    onClick={() => setEditingTags(true)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted"
-                  >
-                    <Pencil className="w-3 h-3" /> Edit
-                  </button>
-                ) : (
-                  <div className="flex gap-1">
-                    <button
-                      onClick={handleSaveTags}
-                      disabled={isSavingTags}
-                      className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 px-2 py-1 rounded-md hover:bg-primary/10 transition-colors"
-                    >
-                      <Check className="w-3 h-3" /> {isSavingTags ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      onClick={() => { setTagsValue(item.tags || []); setEditingTags(false); }}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors"
-                    >
-                      <X className="w-3 h-3" /> Cancel
-                    </button>
-                  </div>
-                )}
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {(editingTags ? tagsValue : item.tags || []).map((tag) => (
+                {(isEditing ? tagsValue : item.tags || []).map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center gap-1 bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
                   >
                     {tag}
-                    {editingTags && (
+                    {isEditing && (
                       <button
                         onClick={() => removeTag(tag)}
                         className="ml-0.5 hover:text-destructive transition-colors"
@@ -310,7 +286,7 @@ export default function ItemOverviewPage() {
                   </span>
                 ))}
 
-                {editingTags && (
+                {isEditing && (
                   <div className="flex items-center gap-1">
                     <input
                       value={newTag}
@@ -328,7 +304,7 @@ export default function ItemOverviewPage() {
                   </div>
                 )}
 
-                {!editingTags && (item.tags || []).length === 0 && (
+                {!isEditing && (item.tags || []).length === 0 && (
                   <span className="text-xs text-muted-foreground/60 italic">No tags</span>
                 )}
               </div>

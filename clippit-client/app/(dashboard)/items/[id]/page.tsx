@@ -134,7 +134,7 @@ export default function ItemOverviewPage() {
 
   if (!item) {
     return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full text-center mt-12">
         <h2 className="text-xl font-semibold text-foreground mb-2">Item not found</h2>
         <p className="text-muted-foreground text-sm mb-6">This item may have been deleted.</p>
         <button onClick={() => router.push("/dashboard")} className="text-primary hover:underline text-sm">
@@ -152,31 +152,31 @@ export default function ItemOverviewPage() {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto p-4 sm:p-8">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full animate-in fade-in duration-500">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm w-fit"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Back to Dashboard
           </button>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-foreground hover:bg-muted border border-border rounded-lg transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted border border-border rounded-lg transition-all active:scale-95 shadow-sm"
               >
                 <Pencil className="w-4 h-4" />
-                Edit
+                Edit Item
               </button>
             ) : (
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCancel}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all active:scale-95"
                 >
                   <X className="w-4 h-4" />
                   Cancel
@@ -184,10 +184,10 @@ export default function ItemOverviewPage() {
                 <button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-all active:scale-95 shadow-sm disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
-                  {isSaving ? "Saving..." : "Save"}
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             )}
@@ -195,7 +195,7 @@ export default function ItemOverviewPage() {
             <button
               onClick={() => setShowDeleteDialog(true)}
               disabled={isDeleting}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors border border-transparent hover:border-destructive/30"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 rounded-lg transition-all active:scale-95 border border-transparent hover:border-destructive/20 ml-2"
             >
               <Trash2 className="w-4 h-4" />
               Delete
@@ -203,137 +203,156 @@ export default function ItemOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-          {/* Image */}
+        {/* Main Content Area (No box!) */}
+        <div className="flex flex-col gap-8">
+          
+          {/* Header Section (Title & Type) */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <span className="shrink-0 px-2.5 py-1 text-[11px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground inline-block">
+                {item.type}
+              </span>
+              <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4 opacity-70" /> {formattedDate}
+              </span>
+            </div>
+            
+            {item.title && (
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight mt-2">
+                {item.title}
+              </h1>
+            )}
+            
+            {/* Domain / Source Link below title */}
+            {domain && (
+              <div className="flex items-center gap-4 mt-2">
+                <span className="flex items-center gap-2 text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full border border-border/50">
+                  {faviconUrl ? (
+                    <img src={faviconUrl} alt="" className="w-4 h-4 rounded-[3px]" />
+                  ) : (
+                    <Globe className="w-4 h-4" />
+                  )}
+                  {domain}
+                </span>
+                {item.sourceUrl && (
+                  <a
+                    href={item.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  >
+                    Visit original <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="h-px bg-border w-full opacity-60 my-2" />
+
+          {/* Core Content (Image or Text) */}
           {item.type === "image" && item.imageUrl && !imgError && (
-            <div className="w-full bg-muted border-b border-border">
+            <div className="w-full relative rounded-2xl overflow-hidden border border-border bg-muted/30 shadow-sm max-w-4xl">
               <img
                 src={item.imageUrl}
                 alt={item.title || "Saved image"}
-                className="w-full h-auto max-h-[500px] object-contain"
+                className="w-full h-auto object-contain"
                 onError={() => setImgError(true)}
               />
             </div>
           )}
 
-          <div className="p-5 sm:p-6">
-            {/* Type badge + title */}
-            <div className="flex items-start gap-3 mb-4">
-              <span className="shrink-0 mt-0.5 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground">
-                {item.type}
-              </span>
-              {item.title && (
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight">
-                  {item.title}
-                </h1>
-              )}
-            </div>
-
-            {/* Text content */}
-            {item.type === "text" && item.content && (
-              <p className="text-foreground text-base leading-relaxed whitespace-pre-wrap mb-5">
+          {item.type === "text" && item.content && (
+            <div className="relative max-w-4xl">
+              <div className="absolute -top-4 -left-6 text-6xl text-muted-foreground/10 font-serif leading-none select-none hidden sm:block">
+                &ldquo;
+              </div>
+              <p className="text-foreground/90 text-lg sm:text-xl leading-relaxed whitespace-pre-wrap font-medium">
                 {item.content}
               </p>
-            )}
+            </div>
+          )}
 
-            {/* Divider */}
-            <div className="border-t border-border my-5" />
-
+          {/* Notes & Tags Area - Two Column Layout on Desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl bg-muted/20 border border-border rounded-2xl p-6 sm:p-8 mt-4">
+            
             {/* Note section */}
-            <div className="mb-5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Note</span>
+            <div>
+              <div className="flex items-center mb-4">
+                <span className="text-sm font-bold text-foreground uppercase tracking-widest flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Personal Note
+                </span>
               </div>
+              
               {isEditing ? (
                 <textarea
                   value={noteValue}
                   onChange={(e) => setNoteValue(e.target.value)}
-                  placeholder="Add a note..."
-                  rows={3}
-                  className="w-full text-sm text-foreground bg-muted/50 border border-border rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                  placeholder="Add a note to remember why you saved this..."
+                  rows={4}
+                  className="w-full text-base text-foreground bg-background border border-border rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-sm"
                 />
               ) : (
-                <p className="text-sm text-muted-foreground leading-relaxed min-h-[2rem]">
-                  {item.note || <span className="italic text-muted-foreground/60">No note added</span>}
+                <p className="text-[15px] text-muted-foreground leading-relaxed">
+                  {item.note || <span className="italic text-muted-foreground/50">No note added. Edit item to add context.</span>}
                 </p>
               )}
             </div>
 
             {/* Tags section */}
-            <div className="mb-5">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tags</span>
+            <div>
+              <div className="flex items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary-foreground/50" />
+                  <span className="text-sm font-bold text-foreground uppercase tracking-widest">Collections</span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {(isEditing ? tagsValue : item.tags || []).map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs"
+                    className="inline-flex items-center gap-1.5 bg-secondary text-secondary-foreground font-medium rounded-full px-4 py-1.5 text-sm shadow-sm border border-transparent hover:border-border transition-colors"
                   >
-                    {tag}
+                    <Tag className="w-3.5 h-3.5 opacity-70" />
+                     {tag}
                     {isEditing && (
                       <button
                         onClick={() => removeTag(tag)}
-                        className="ml-0.5 hover:text-destructive transition-colors"
+                        className="ml-1 -mr-1 p-0.5 hover:bg-secondary-foreground/10 rounded-full text-secondary-foreground/70 hover:text-destructive transition-colors"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </span>
                 ))}
 
                 {isEditing && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <input
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                       placeholder="Add tag..."
-                      className="text-xs bg-muted/50 border border-border rounded-full px-3 py-1 focus:outline-none focus:ring-1 focus:ring-primary w-24"
+                      className="text-sm bg-background border border-border rounded-full px-4 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/50 w-32 shadow-sm transition-all"
                     />
                     <button
                       onClick={addTag}
-                      className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors"
+                      className="p-1.5 text-primary hover:text-primary-foreground hover:bg-primary rounded-full transition-colors border border-primary/20 bg-primary/10"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-4 h-4" />
                     </button>
                   </div>
                 )}
 
                 {!isEditing && (item.tags || []).length === 0 && (
-                  <span className="text-xs text-muted-foreground/60 italic">No tags</span>
+                  <span className="text-[15px] text-muted-foreground/50 italic">No tags associated.</span>
                 )}
               </div>
             </div>
 
-            {/* Footer meta */}
-            <div className="border-t border-border pt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              {domain && (
-                <span className="flex items-center gap-1.5">
-                  {faviconUrl && <img src={faviconUrl} alt="" className="w-3.5 h-3.5 rounded-sm" />}
-                  <Globe className="w-3.5 h-3.5" />
-                  {domain}
-                </span>
-              )}
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5" />
-                {formattedDate}
-              </span>
-              {item.sourceUrl && (
-                <a
-                  href={item.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-primary hover:underline ml-auto"
-                >
-                  Open source <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </div>
           </div>
         </div>
       </div>

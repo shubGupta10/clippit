@@ -5,8 +5,7 @@ import { Item } from "@/lib/types";
 import { ItemCard } from "./ItemCard";
 import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
-import { useSearch } from "@/lib/hooks/useSearch";
-import { Navbar } from "../layout/Navbar";
+import { useSearchContext } from "@/lib/context/SearchContext";
 import { SearchX, RotateCw, X } from "lucide-react";
 import { useApi } from "@/lib/axios";
 
@@ -30,7 +29,7 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
   const [items, setItems] = useState<Item[]>(initialItems || []);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { deleteItem, isDeleting } = useItems();
-  const { searchResults, isSearching, searchQuery, setSearchQuery } = useSearch();
+  const { searchResults, isSearching, searchQuery, setSearchQuery, clearSearch } = useSearchContext();
   const api = useApi();
 
   const handleRefresh = useCallback(async () => {
@@ -56,12 +55,6 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
 
   return (
     <>
-      <Navbar
-        onSearch={(q) => setSearchQuery(q)}
-        resultCount={isSearchActive && !isSearching ? searchResults.length : undefined}
-        isSearching={isSearching}
-      />
-
       <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
         {/* Page header row */}
         <div className="mb-4 sm:mb-5 flex items-center justify-between">
@@ -74,7 +67,7 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
                 }
               </p>
               <button 
-                onClick={() => setSearchQuery("")}
+                onClick={clearSearch}
                 className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all duration-200 active:scale-95"
               >
                 <X className="w-3.5 h-3.5" /> Clear Search

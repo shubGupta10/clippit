@@ -11,7 +11,6 @@ export function useSearch(onSearch?: (query: string) => void) {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    // If empty query, reset instantly
     if (!searchQuery.trim()) {
       setSearchResults([]);
       setIsSearching(false);
@@ -25,7 +24,7 @@ export function useSearch(onSearch?: (query: string) => void) {
 
       try {
         const response = await api.post("/api/search", { query: searchQuery });
-        const items = response.data?.items || response.data || [];
+        const items = response.data?.data || [];
         setSearchResults(Array.isArray(items) ? items : []);
       } catch (error) {
         console.error("Search failed:", error);

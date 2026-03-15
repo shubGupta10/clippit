@@ -24,7 +24,7 @@ const searchItems = async (clerkId: string, { query, limit = 10 }: ISearchQuery)
         {
             $vectorSearch: {
                 index: "embedding_index",
-                path: "embedding",
+                path: "embeddings",
                 queryVector: queryEmbedding,
                 numCandidates: 100,
                 limit,

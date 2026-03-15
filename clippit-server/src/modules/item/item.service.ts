@@ -67,6 +67,40 @@ const deleteItem = async (itemId: string, clerkId: string) => {
     return deleted;
 };
 
+const editItem = async (
+    ItemId: string,
+    clerkId: string,
+    data: { note?: string, tags?: string[] }
+) => {
+    if (!data.note && !data.tags) {
+        throw new AppError("Nothing to update", 400);
+    }
+
+    if (data.tags && !Array.isArray(data.tags)) {
+        throw new AppError("Tags must be an array", 400);
+    }
+
+    if (data.tags && data.tags.some(tag => typeof tag !== "string" || !tag.trim())) {
+        throw new AppError("All tags must be non-empty strings", 400);
+    }
+
+    const updatedData: Partial<IItem> = {};
+    if (data.note !== undefined) updatedData.note = data.note.trim();
+
+    if (data.tags !== undefined) updatedData.tags = data.tags.map(t => t.trim());
+
+    const item = await Item.findOneAndUpdate(
+        { _id: ItemId, clerkId },
+        { $set: updatedData },
+        { returnDocument: "after" }
+    );
+
+    if (!item) {
+        throw new AppError("Item not found or Unauthorized", 404)
+    }
+    return item
+}
+
 const updateItemEmbedding = async (
     itemId: string,
     embedding: number[],
@@ -88,5 +122,6 @@ export const ItemService = {
     fetchUserItem,
     getItemById,
     deleteItem,
-    updateItemEmbedding
+    updateItemEmbedding,
+    editItem
 }

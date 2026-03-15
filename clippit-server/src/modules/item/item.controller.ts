@@ -57,9 +57,24 @@ const deleteItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
     });
 });
 
+const editItem = asyncWrapper(
+    async (req: AuthRequest, res: Response) => {
+        const clerkId = req.userId;
+        if (!clerkId) throw new AppError("Unauthorized", 401)
+
+        const items = await ItemService.editItem(req.params.id as string, clerkId, req.body)
+
+        res.status(200).json({
+            success: true,
+            data: items
+        })
+    }
+)
+
 export {
     createItem,
     fetchUserItem,
     getItemById,
-    deleteItem
+    deleteItem,
+    editItem
 }

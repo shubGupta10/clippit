@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth";
-import { createItem, fetchUserItem, getItemById, deleteItem } from "../../modules/item/item.controller";
+import { createItem, fetchUserItem, getItemById, deleteItem, editItem } from "../../modules/item/item.controller";
 
 const router = Router();
 
@@ -20,6 +20,12 @@ router.get(
     "/:id",
     requireAuth,
     getItemById
+)
+
+router.patch(
+    "/:id",
+    requireAuth,
+    editItem
 )
 
 router.delete(

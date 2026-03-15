@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Item } from "@/lib/types";
 import { ItemCard } from "./ItemCard";
 import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSearch } from "@/lib/hooks/useSearch";
 import { Navbar } from "../layout/Navbar";
-import { SearchX } from "lucide-react";
+import { SearchX, RotateCw } from "lucide-react";
+import { useApi } from "@/lib/axios";
+
 
 function SkeletonCard() {
   return (
@@ -27,8 +29,28 @@ function SkeletonCard() {
 
 export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
   const [items, setItems] = useState<Item[]>(initialItems || []);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { deleteItem, isDeleting } = useItems();
   const { searchResults, isSearching, searchQuery, setSearchQuery } = useSearch();
+  const api = useApi();
+
+  const handleRefresh = useCallback(
+    async () => {
+      setIsRefreshing(true);
+      try {
+        const res = await api.get("/api/items/get-user-items");
+        const fresh = res.data?.data;
+        if (Array.isArray(fresh)) {
+          setItems(fresh)
+        }
+      } catch (error) {
+        console.error("Refresh failed")
+      } finally {
+        setIsRefreshing(false);
+      }
+    },
+    [api]
+  )
 
   const handleDelete = async (id: string) => {
     setItems((prev) => prev.filter((item) => item._id !== id));
@@ -47,17 +69,33 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
       />
 
       <div className="p-6 max-w-[1600px] mx-auto w-full">
-        {/* Search result header */}
-        {isSearchActive && !isSearching && (
-          <div className="mb-5 flex items-center gap-2">
+        {/* Page header with refresh button */}
+        <div className="mb-5 flex items-center justify-between">
+          {isSearchActive && !isSearching ? (
             <p className="text-sm text-muted-foreground">
               {searchResults.length > 0
                 ? <>Showing <span className="font-medium text-foreground">{searchResults.length}</span> result{searchResults.length !== 1 ? "s" : ""} for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
                 : <>No results for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
               }
             </p>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {items.length} {items.length === 1 ? "item" : "items"} saved
+            </p>
+          )}
+
+          {!isSearchActive && (
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              title="Refresh"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted disabled:opacity-50"
+            >
+              <RotateCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+              {isRefreshing ? "Refreshing..." : "Refresh"}
+            </button>
+          )}
+        </div>
 
         {/* Skeleton loading */}
         {isSearching && (

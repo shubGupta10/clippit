@@ -98,9 +98,9 @@ function BookmarkletForm() {
 
   if (isSuccess) {
     return (
-      <div className="flex flex-col h-[400px] w-full items-center justify-center p-8 text-center gap-4 animate-in fade-in zoom-in duration-300">
-        <div className="bg-primary/20 p-4 rounded-full">
-          <Check className="h-10 w-10 text-primary" />
+      <div className="flex flex-col h-[400px] w-full items-center justify-center p-8 text-center gap-4 animate-in fade-in zoom-in-50 duration-500">
+        <div className="bg-green-500/10 p-5 rounded-full animate-in zoom-in spin-in-12 duration-500">
+          <Check className="h-10 w-10 text-green-500" />
         </div>
         <h2 className="text-2xl font-bold text-foreground tracking-tight">Saved!</h2>
         <p className="text-sm text-muted-foreground">You can close this window.</p>
@@ -117,22 +117,22 @@ function BookmarkletForm() {
       </div>
 
       {/* Mode Switcher */}
-      <div className="flex bg-muted p-1 rounded-lg mb-6 shrink-0">
+      <div className="flex bg-muted/60 p-1.5 rounded-full mb-6 shrink-0 border border-border">
         <button
           onClick={() => setMode("text")}
-          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-md transition-all ${mode === "text" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${mode === "text" ? "bg-primary text-primary-foreground shadow-sm scale-[0.98]" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
         >
           <Type className="h-4 w-4" /> Text
         </button>
         <button
           onClick={() => setMode("image")}
-          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-md transition-all ${mode === "image" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${mode === "image" ? "bg-primary text-primary-foreground shadow-sm scale-[0.98]" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
         >
           <ImageIcon className="h-4 w-4" /> Image
         </button>
         <button
           onClick={() => setMode("link")}
-          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-md transition-all ${mode === "link" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+          className={`flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ${mode === "link" ? "bg-primary text-primary-foreground shadow-sm scale-[0.98]" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
         >
           <Link2 className="h-4 w-4" /> Link
         </button>
@@ -145,7 +145,7 @@ function BookmarkletForm() {
             value={textContent}
             onChange={(e) => setTextContent(e.target.value)}
             placeholder="Paste or type the text you want to save..."
-            className="w-full flex-1 min-h-[120px] p-3 text-sm bg-muted/50 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none placeholder:text-muted-foreground"
+            className="w-full flex-1 min-h-[120px] p-3 text-sm bg-background border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring resize-none placeholder:text-muted-foreground shadow-sm transition-all"
           />
         )}
 
@@ -156,10 +156,10 @@ function BookmarkletForm() {
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="Paste image URL..."
-              className="w-full p-2.5 text-sm bg-muted/50 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
+              className="w-full p-3 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring placeholder:text-muted-foreground shadow-sm transition-all"
             />
             {imageUrl && (
-              <div className="relative w-full h-32 rounded-md overflow-hidden bg-muted border border-border mt-2">
+              <div className="relative w-full h-32 rounded-xl overflow-hidden bg-muted border border-border mt-2 shadow-sm">
                 <img
                   src={imageUrl}
                   alt="Preview"
@@ -175,24 +175,24 @@ function BookmarkletForm() {
 
         {mode === "link" && (
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground ml-1">Title</label>
               <input
                 type="text"
                 value={linkTitle}
                 onChange={(e) => setLinkTitle(e.target.value)}
                 placeholder="Page title"
-                className="w-full p-2.5 text-sm bg-muted/50 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full p-3 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring shadow-sm transition-all"
               />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground ml-1">URL</label>
               <input
                 type="url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
                 placeholder="https://"
-                className="w-full p-2.5 text-sm bg-muted/50 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full p-3 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring shadow-sm transition-all"
               />
             </div>
           </div>
@@ -213,14 +213,14 @@ function BookmarkletForm() {
       {/* Footer */}
       <div className="shrink-0 mt-2">
         {error && (
-          <div className="mb-3 text-xs text-destructive-foreground bg-destructive/10 p-2.5 rounded-md border border-destructive/20 break-words">
+          <div className="mb-3 text-xs text-destructive-foreground bg-destructive/10 p-2.5 rounded-lg border border-destructive/20 break-words">
             {error}
           </div>
         )}
         <button
           onClick={handleSave}
           disabled={isLoading || (mode === "text" && !textContent.trim()) || (mode === "image" && !imageUrl.trim()) || (mode === "link" && !linkUrl.trim())}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-medium p-2.5 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-medium py-3 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none active:scale-95"
         >
           {isLoading ? (
             <>

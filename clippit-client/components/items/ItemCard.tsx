@@ -57,7 +57,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
   const renderBadge = () => {
     const label = item.type === "text" ? "Text" : item.type === "image" ? "Image" : "Link";
     return (
-      <span className="absolute top-3 right-3 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground shadow-sm z-10 pointer-events-none">
+      <span className="absolute top-4 right-4 px-2.5 py-0.5 text-xs font-medium rounded-full bg-accent text-accent-foreground shadow-sm z-10 pointer-events-none">
         {label}
       </span>
     );
@@ -67,67 +67,111 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
     <>
       <div
         onClick={handleCardClick}
-        className={`relative bg-card border border-border rounded-lg shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 overflow-hidden group cursor-pointer ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
+        className={`relative flex flex-col h-full bg-card border border-border rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group cursor-pointer ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
       >
+        {/* Magic hover glow effect - visible only on hover */}
+        <div className="absolute inset-x-0 -top-px h-px w-1/2 mx-auto bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
         {renderBadge()}
 
-        {/* Image */}
-        {item.type === "image" && item.imageUrl && !imgError && (
-          <div className="w-full overflow-hidden bg-muted">
-            <img
-              src={item.imageUrl}
-              alt={item.title || "Saved image"}
-              className="w-full h-auto max-h-[400px] object-cover"
-              onError={() => setImgError(true)}
-              loading="lazy"
-            />
-          </div>
-        )}
-
-        <div className="p-3 sm:p-4 pt-4 sm:pt-5">
-          {item.type === "text" && (
-            <p className="text-foreground text-sm line-clamp-4 leading-relaxed whitespace-pre-wrap">
-              {item.content || "No text content available"}
-            </p>
-          )}
-
-          {item.type === "link" && (
-            <div className="pr-10">
-              <h4 className="font-semibold text-foreground text-sm sm:text-base leading-tight mb-1.5 line-clamp-2">
-                {item.title || domain || "Saved Link"}
-              </h4>
-              <p className="text-muted-foreground text-xs truncate max-w-full">{item.sourceUrl}</p>
+        {/* Content Area */}
+        <div className="flex flex-col flex-1 relative z-10">
+          {item.type === "image" && item.imageUrl && !imgError && (
+            <div className="w-full relative overflow-hidden bg-muted rounded-t-xl group-hover:rounded-t-none transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <img
+                src={item.imageUrl}
+                alt={item.title || "Saved image"}
+                className="w-full aspect-[4/3] object-cover transition-transform duration-500 group-hover:scale-105"
+                onError={() => setImgError(true)}
+                loading="lazy"
+              />
+              
+              {/* Glassmorphism Title Overlay for Images */}
+              {(item.title) && (
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                  <h4 className="font-semibold text-white text-sm sm:text-base leading-tight line-clamp-2 tracking-tight drop-shadow-md">
+                    {item.title}
+                  </h4>
+                </div>
+              )}
             </div>
           )}
 
-          {(item.type === "image" || imgError) && item.title && (
-            <h4 className="font-semibold text-foreground text-sm sm:text-base leading-tight mb-1.5 line-clamp-2 mt-2">
-              {item.title}
-            </h4>
-          )}
+          <div className={`p-5 flex flex-col flex-1 ${item.type === 'text' ? 'bg-muted/10' : item.type === 'link' ? 'bg-primary/[0.02]' : ''}`}>
+            
+            {/* Text Cards */}
+            {item.type === "text" && (
+              <div className="relative">
+                <div className="absolute -top-2 -left-2 text-2xl text-muted-foreground/20 font-serif leading-none">&ldquo;</div>
+                <p className="text-foreground/90 text-[15px] line-clamp-5 leading-relaxed tracking-tight relative z-10 pt-2 pb-1">
+                  {item.content || "No text content available"}
+                </p>
+              </div>
+            )}
 
-          {(item.type === "image" || imgError) && item.note && (
-            <p className="text-muted-foreground text-sm line-clamp-3 mt-1">{item.note}</p>
-          )}
+            {/* Link Cards */}
+            {item.type === "link" && (
+              <div className="pr-12 pt-1 flex flex-col h-full">
+                <h4 className="font-semibold text-foreground text-[17px] leading-snug mb-2.5 line-clamp-3 tracking-tight group-hover:text-primary transition-colors">
+                  {item.title || domain || "Saved Link"}
+                </h4>
+                <p className="text-muted-foreground/80 text-[13px] truncate max-w-full flex items-center gap-1.5 mt-auto bg-muted/30 px-2 py-1.5 rounded-md w-fit border border-border/50">
+                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{item.sourceUrl}</span>
+                </p>
+              </div>
+            )}
+
+            {/* Image Text Fallback (if image fails or has notes) */}
+            {(item.type === "image" || imgError) && item.title && imgError && (
+              <h4 className="font-semibold text-foreground text-base leading-tight mb-2 line-clamp-2 tracking-tight">
+                {item.title}
+              </h4>
+            )}
+
+            {(item.type === "image" || imgError) && item.note && (
+              <p className="text-muted-foreground/80 text-sm line-clamp-3 mt-3 italic border-l-2 border-primary/30 pl-3">
+                {item.note}
+              </p>
+            )}
+
+            {/* Tags area */}
+            {item.tags && item.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-auto pt-5">
+                {item.tags.map((tag) => (
+                  <span key={tag} className="bg-secondary/80 text-secondary-foreground text-[11px] font-medium tracking-wide rounded-full px-2.5 py-1 hover:bg-secondary transition-colors border border-border/40">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="px-3 sm:px-4 py-3 border-t border-border/40 flex items-center justify-between bg-muted/10">
+        <div className="px-5 py-3.5 border-t border-border/50 flex items-center justify-between bg-card text-[13px] text-muted-foreground relative z-20">
           <div className="flex items-center gap-2 overflow-hidden min-w-0">
-            {faviconUrl && <img src={faviconUrl} alt="" className="w-3.5 h-3.5 rounded-sm shrink-0" />}
-            <span className="text-[11px] font-medium text-muted-foreground truncate" title={domain}>
-              {domain}
+            {faviconUrl ? (
+              <img src={faviconUrl} alt="" className="w-4 h-4 rounded-[3px] shrink-0 opacity-80 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" />
+            ) : (
+              <div className="w-4 h-4 rounded-[3px] shrink-0 bg-muted flex items-center justify-center">
+                <ExternalLink className="w-2.5 h-2.5" />
+              </div>
+            )}
+            <span className="font-medium truncate group-hover:text-foreground transition-colors tracking-tight" title={domain}>
+              {domain || "clippit"}
             </span>
-            <span className="w-1 h-1 rounded-full bg-border shrink-0" />
-            <span className="text-[11px] text-muted-foreground shrink-0 hidden sm:inline">{formattedDate}</span>
+            <span className="w-1 h-1 rounded-full bg-border shrink-0 mx-0.5" />
+            <span className="shrink-0 tracking-tight">{formattedDate}</span>
           </div>
 
-          {/* Action buttons — large touch targets */}
-          <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity z-20 shrink-0">
+          {/* Action buttons — invisible by default, fade in on hover */}
+          <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 z-20 shrink-0">
             {item.sourceUrl && (
               <button
                 onClick={handleExternalLink}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors active:scale-95"
                 title="Open source"
                 aria-label="Open source URL"
               >
@@ -136,7 +180,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
             )}
             <button
               onClick={handleDeleteClick}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors active:scale-95"
               disabled={isDeleting}
               title="Delete item"
               aria-label="Delete item"

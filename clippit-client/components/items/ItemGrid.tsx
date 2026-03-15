@@ -7,7 +7,7 @@ import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSearch } from "@/lib/hooks/useSearch";
 import { Navbar } from "../layout/Navbar";
-import { SearchX, RotateCw } from "lucide-react";
+import { SearchX, RotateCw, X } from "lucide-react";
 import { useApi } from "@/lib/axios";
 
 function SkeletonCard() {
@@ -66,16 +66,27 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
         {/* Page header row */}
         <div className="mb-4 sm:mb-5 flex items-center justify-between">
           {isSearchActive && !isSearching ? (
-            <p className="text-sm text-muted-foreground">
-              {searchResults.length > 0
-                ? <>Showing <span className="font-medium text-foreground">{searchResults.length}</span> result{searchResults.length !== 1 ? "s" : ""} for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
-                : <>No results for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
-              }
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                {searchResults.length > 0
+                  ? <><span className="font-medium text-foreground">{searchResults.length}</span> result{searchResults.length !== 1 ? "s" : ""} for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
+                  : <>No results for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
+                }
+              </p>
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all duration-200 active:scale-95"
+              >
+                <X className="w-3.5 h-3.5" /> Clear Search
+              </button>
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              {items.length} {items.length === 1 ? "item" : "items"} saved
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-primary/80" />
+              <p className="text-sm font-medium text-muted-foreground tracking-tight">
+                {items.length} {items.length === 1 ? "item" : "items"} saved
+              </p>
+            </div>
           )}
 
           {!isSearchActive && (
@@ -83,7 +94,7 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
               onClick={handleRefresh}
               disabled={isRefreshing}
               title="Refresh"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[44px]"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-all px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[44px] active:scale-95"
             >
               <RotateCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
               <span className="hidden sm:inline">{isRefreshing ? "Refreshing..." : "Refresh"}</span>
@@ -93,7 +104,7 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
 
         {/* Search skeleton */}
         {isSearching && (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
@@ -116,9 +127,13 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
 
         {/* Results grid */}
         {!isSearching && displayItems.length > 0 && (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6">
-            {displayItems.map((item) => (
-              <div key={item._id} className="break-inside-avoid mb-4 sm:mb-6 inline-block w-full">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+            {displayItems.map((item, i) => (
+              <div 
+                key={item._id} 
+                className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
+              >
                 <ItemCard
                   item={item}
                   onDelete={handleDelete}

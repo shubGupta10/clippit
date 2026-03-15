@@ -10,16 +10,15 @@ import { Navbar } from "../layout/Navbar";
 import { SearchX, RotateCw } from "lucide-react";
 import { useApi } from "@/lib/axios";
 
-
 function SkeletonCard() {
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden animate-pulse break-inside-avoid mb-6 inline-block w-full">
-      <div className="bg-muted h-40 w-full" />
-      <div className="p-4 space-y-2">
+    <div className="bg-card border border-border rounded-lg overflow-hidden animate-pulse break-inside-avoid mb-4 sm:mb-6 inline-block w-full">
+      <div className="bg-muted h-36 w-full" />
+      <div className="p-3 sm:p-4 space-y-2">
         <div className="h-3 bg-muted rounded w-3/4" />
         <div className="h-3 bg-muted rounded w-1/2" />
       </div>
-      <div className="px-4 py-3 border-t border-border/40 flex items-center gap-2">
+      <div className="px-3 sm:px-4 py-3 border-t border-border/40 flex items-center gap-2">
         <div className="h-3 w-3 bg-muted rounded-full" />
         <div className="h-3 bg-muted rounded w-24" />
       </div>
@@ -34,23 +33,18 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
   const { searchResults, isSearching, searchQuery, setSearchQuery } = useSearch();
   const api = useApi();
 
-  const handleRefresh = useCallback(
-    async () => {
-      setIsRefreshing(true);
-      try {
-        const res = await api.get("/api/items/get-user-items");
-        const fresh = res.data?.data;
-        if (Array.isArray(fresh)) {
-          setItems(fresh)
-        }
-      } catch (error) {
-        console.error("Refresh failed")
-      } finally {
-        setIsRefreshing(false);
-      }
-    },
-    [api]
-  )
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await api.get("/api/items/get-user-items");
+      const fresh = res.data?.data;
+      if (Array.isArray(fresh)) setItems(fresh);
+    } catch (err) {
+      console.error("Refresh failed", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [api]);
 
   const handleDelete = async (id: string) => {
     setItems((prev) => prev.filter((item) => item._id !== id));
@@ -68,9 +62,9 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
         isSearching={isSearching}
       />
 
-      <div className="p-6 max-w-[1600px] mx-auto w-full">
-        {/* Page header with refresh button */}
-        <div className="mb-5 flex items-center justify-between">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
+        {/* Page header row */}
+        <div className="mb-4 sm:mb-5 flex items-center justify-between">
           {isSearchActive && !isSearching ? (
             <p className="text-sm text-muted-foreground">
               {searchResults.length > 0
@@ -89,24 +83,22 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
               onClick={handleRefresh}
               disabled={isRefreshing}
               title="Refresh"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted disabled:opacity-50"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[44px]"
             >
               <RotateCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-              {isRefreshing ? "Refreshing..." : "Refresh"}
+              <span className="hidden sm:inline">{isRefreshing ? "Refreshing..." : "Refresh"}</span>
             </button>
           )}
         </div>
 
-        {/* Skeleton loading */}
+        {/* Search skeleton */}
         {isSearching && (
-          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6">
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
-        {/* Empty states */}
+        {/* Empty: no search results */}
         {!isSearching && isSearchActive && searchResults.length === 0 && (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8 w-full max-w-md mx-auto">
             <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mb-6">
@@ -119,13 +111,14 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
           </div>
         )}
 
+        {/* Empty: no items */}
         {!isSearching && !isSearchActive && items.length === 0 && <EmptyState />}
 
         {/* Results grid */}
         {!isSearching && displayItems.length > 0 && (
-          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6">
             {displayItems.map((item) => (
-              <div key={item._id} className="break-inside-avoid mb-6 inline-block w-full">
+              <div key={item._id} className="break-inside-avoid mb-4 sm:mb-6 inline-block w-full">
                 <ItemCard
                   item={item}
                   onDelete={handleDelete}

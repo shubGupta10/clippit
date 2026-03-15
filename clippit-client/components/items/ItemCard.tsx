@@ -55,14 +55,12 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
     : "Just now";
 
   const renderBadge = () => {
-    switch (item.type) {
-      case "text":
-        return <span className="absolute top-3 right-3 px-2 py-1 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground shadow-sm z-10 pointer-events-none">Text</span>;
-      case "image":
-        return <span className="absolute top-3 right-3 px-2 py-1 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground shadow-sm z-10 pointer-events-none">Image</span>;
-      case "link":
-        return <span className="absolute top-3 right-3 px-2 py-1 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground shadow-sm z-10 pointer-events-none">Link</span>;
-    }
+    const label = item.type === "text" ? "Text" : item.type === "image" ? "Image" : "Link";
+    return (
+      <span className="absolute top-3 right-3 px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded-md bg-secondary text-secondary-foreground shadow-sm z-10 pointer-events-none">
+        {label}
+      </span>
+    );
   };
 
   return (
@@ -75,7 +73,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
 
         {/* Image */}
         {item.type === "image" && item.imageUrl && !imgError && (
-          <div className="w-full relative overflow-hidden bg-muted">
+          <div className="w-full overflow-hidden bg-muted">
             <img
               src={item.imageUrl}
               alt={item.title || "Saved image"}
@@ -86,7 +84,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
           </div>
         )}
 
-        <div className="p-4 pt-5">
+        <div className="p-3 sm:p-4 pt-4 sm:pt-5">
           {item.type === "text" && (
             <p className="text-foreground text-sm line-clamp-4 leading-relaxed whitespace-pre-wrap">
               {item.content || "No text content available"}
@@ -94,16 +92,16 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
           )}
 
           {item.type === "link" && (
-            <div className="pr-12">
-              <h4 className="font-semibold text-foreground text-base leading-tight mb-1.5 line-clamp-2">
+            <div className="pr-10">
+              <h4 className="font-semibold text-foreground text-sm sm:text-base leading-tight mb-1.5 line-clamp-2">
                 {item.title || domain || "Saved Link"}
               </h4>
-              <p className="text-muted-foreground text-xs truncate">{item.sourceUrl}</p>
+              <p className="text-muted-foreground text-xs truncate max-w-full">{item.sourceUrl}</p>
             </div>
           )}
 
           {(item.type === "image" || imgError) && item.title && (
-            <h4 className="font-semibold text-foreground text-base leading-tight mb-1.5 line-clamp-2 mt-2">
+            <h4 className="font-semibold text-foreground text-sm sm:text-base leading-tight mb-1.5 line-clamp-2 mt-2">
               {item.title}
             </h4>
           )}
@@ -114,21 +112,22 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-border/40 flex items-center justify-between bg-muted/10">
-          <div className="flex items-center gap-2 overflow-hidden">
+        <div className="px-3 sm:px-4 py-3 border-t border-border/40 flex items-center justify-between bg-muted/10">
+          <div className="flex items-center gap-2 overflow-hidden min-w-0">
             {faviconUrl && <img src={faviconUrl} alt="" className="w-3.5 h-3.5 rounded-sm shrink-0" />}
-            <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[120px]" title={domain}>
+            <span className="text-[11px] font-medium text-muted-foreground truncate" title={domain}>
               {domain}
             </span>
             <span className="w-1 h-1 rounded-full bg-border shrink-0" />
-            <span className="text-[11px] text-muted-foreground shrink-0">{formattedDate}</span>
+            <span className="text-[11px] text-muted-foreground shrink-0 hidden sm:inline">{formattedDate}</span>
           </div>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity z-20">
+          {/* Action buttons — large touch targets */}
+          <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity z-20 shrink-0">
             {item.sourceUrl && (
               <button
                 onClick={handleExternalLink}
-                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                 title="Open source"
                 aria-label="Open source URL"
               >
@@ -137,7 +136,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
             )}
             <button
               onClick={handleDeleteClick}
-              className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
               disabled={isDeleting}
               title="Delete item"
               aria-label="Delete item"
@@ -148,7 +147,6 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
         </div>
       </div>
 
-      {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

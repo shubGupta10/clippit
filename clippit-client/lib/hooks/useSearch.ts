@@ -18,8 +18,9 @@ export function useSearch(onSearch?: (query: string) => void) {
       return;
     }
 
+    setIsSearching(true);
+
     const timer = setTimeout(async () => {
-      setIsSearching(true);
       if (onSearch) onSearch(searchQuery);
 
       try {

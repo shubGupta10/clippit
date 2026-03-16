@@ -1,91 +1,44 @@
-"use client";
+import Link from "next/link";
 
-import React from 'react';
-import { BookmarkIcon, MenuIcon } from 'lucide-react';
-import { Sheet, SheetContent, SheetFooter } from '@/components/sheet';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+const navItems = [
+  { label: "How it works", href: "#workflow" },
+  { label: "Features", href: "#features" },
+  { label: "Why Clippit", href: "#why-clippit" },
+];
 
 export function FloatingHeader() {
-	const [open, setOpen] = React.useState(false);
-
-	const links = [
-		{
-			label: 'Features',
-			href: '#',
-		},
-		{
-			label: 'Organize',
-			href: '#',
-		},
-		{
-			label: 'About',
-			href: '#',
-		},
-	];
-
-	return (
-		<header
-			className={cn(
-				'sticky top-5 z-50',
-				'mx-auto w-full max-w-3xl rounded-lg border shadow',
-				'bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-lg',
-			)}
-		>
-			<nav className="mx-auto flex items-center justify-between p-1.5">
-				<div className="hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 duration-100">
-					<BookmarkIcon className="size-5 text-primary" />
-					<p className="font-mono text-base font-bold text-foreground">Clippit</p>
-				</div>
-				<div className="hidden items-center gap-1 lg:flex">
-					{/* {links.map((link) => (
-						<a
-							key={link.label}
-							className={buttonVariants({ variant: 'ghost', size: 'sm' })}
-							href={link.href}
-						>
-							{link.label}
-						</a>
-					))} */}
-				</div>
-				<div className="flex items-center gap-2">
-					<Button size="sm">Login</Button>
-					<Sheet open={open} onOpenChange={setOpen}>
-						<Button
-							size="icon"
-							variant="outline"
-							onClick={() => setOpen(!open)}
-							className="lg:hidden"
-						>
-							<MenuIcon className="size-4" />
-						</Button>
-						<SheetContent
-							className="bg-background/95 supports-[backdrop-filter]:bg-background/80 gap-0 backdrop-blur-lg"
-							showClose={false}
-							side="left"
-						>
-							<div className="grid gap-y-2 overflow-y-auto px-4 pt-12 pb-5">
-								{/* {links.map((link) => (
-									<a
-										key={link.label}
-										className={buttonVariants({
-											variant: 'ghost',
-											className: 'justify-start',
-										})}
-										href={link.href}
-									>
-										{link.label}
-									</a>
-								))} */}
-							</div>
-							<SheetFooter>
-								<Button variant="outline">Sign In</Button>
-								<Button>Get Started</Button>
-							</SheetFooter>
-						</SheetContent>
-					</Sheet>
-				</div>
-			</nav>
-		</header>
-	);
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
+        <Link href="/" className="font-mono text-sm uppercase tracking-[0.28em] text-primary">
+          Clippit
+        </Link>
+        <div className="hidden items-center gap-8 md:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/sign-in"
+            className="rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:bg-card"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+          >
+            Start free
+          </Link>
+        </div>
+      </nav>
+    </header>
+  );
 }

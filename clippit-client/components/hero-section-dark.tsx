@@ -1,135 +1,36 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { ChevronRight } from "lucide-react"
+import Link from "next/link";
 
-interface HeroSectionProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string
-  subtitle?: {
-    regular: string
-    gradient: string
-  }
-  description?: string
-  ctaText?: string
-  ctaHref?: string
-  bottomImage?: {
-    light: string
-    dark: string
-  }
-  gridOptions?: {
-    angle?: number
-    cellSize?: number
-    opacity?: number
-    lightLineColor?: string
-    darkLineColor?: string
-  }
-}
-
-const RetroGrid = ({
-  angle = 65,
-  cellSize = 60,
-  opacity = 0.2,
-  lightLineColor = "var(--border)",
-  darkLineColor = "var(--border)",
-}) => {
-  const gridStyles = {
-    "--grid-angle": `${angle}deg`,
-    "--cell-size": `${cellSize}px`,
-    "--opacity": opacity,
-    "--light-line": lightLineColor,
-    "--dark-line": darkLineColor,
-  } as React.CSSProperties
-
+export function HeroSection() {
   return (
-    <div
-      className={cn(
-        "pointer-events-none absolute size-full overflow-hidden [perspective:200px]",
-        `opacity-[var(--opacity)]`,
-      )}
-      style={gridStyles}
-    >
-      <div className="absolute inset-0 [transform:rotateX(var(--grid-angle))]">
-        <div className="animate-grid [background-image:linear-gradient(to_right,var(--light-line)_1px,transparent_0),linear-gradient(to_bottom,var(--light-line)_1px,transparent_0)] [background-repeat:repeat] [background-size:var(--cell-size)_var(--cell-size)] [height:300vh] [inset:0%_0px] [margin-left:-200%] [transform-origin:100%_0_0] [width:600vw] dark:[background-image:linear-gradient(to_right,var(--dark-line)_1px,transparent_0),linear-gradient(to_bottom,var(--dark-line)_1px,transparent_0)]" />
+    <section className="flex min-h-[calc(100vh-73px)] items-start border-b border-border">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-5 pt-20 pb-16 text-center md:px-8 md:pt-24">
+        <div className="rounded-full border border-border bg-card px-4 py-2">
+          <p className="font-mono text-xs uppercase tracking-[0.28em] text-primary">
+            Now in Beta
+          </p>
+        </div>
+        <div className="mt-8 space-y-5">
+          <h1 className="mx-auto pb-4 font-serif text-[4.2rem] leading-[1.08] tracking-[-0.05em] text-foreground md:text-[6.5rem]">
+            <span className="block md:whitespace-nowrap">Your personal library</span>
+            <span className="block bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent md:whitespace-nowrap">
+              for everything you find.
+            </span>
+          </h1>
+          <p className="mx-auto max-w-3xl text-lg leading-8 text-muted-foreground">
+            You come across good things every day. A well written headline. A
+            product page that converts. An image that stops you mid scroll.
+            Clippit saves it all and brings it back when you actually need it.
+          </p>
+        </div>
+        <div className="mt-8">
+          <Link
+            href="/sign-up"
+            className="inline-flex rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          >
+            Start saving
+          </Link>
+        </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent to-90% dark:from-black" />
-    </div>
-  )
+    </section>
+  );
 }
-
-const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
-  (
-    {
-      className,
-      title = "Build products for everyone",
-      subtitle = {
-        regular: "Designing your projects faster with ",
-        gradient: "the largest figma UI kit.",
-      },
-      description = "Sed ut perspiciatis unde omnis iste natus voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae.",
-      ctaText = "Browse courses",
-      ctaHref = "#",
-      bottomImage = {
-        light: "https://farmui.vercel.app/dashboard-light.png",
-        dark: "https://farmui.vercel.app/dashboard.png",
-      },
-      gridOptions,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <div className={cn("relative", className)} ref={ref} {...props}>
-        <div className="absolute top-0 z-[0] mx-auto w-full max-w-2xl left-1/2 -translate-x-1/2 h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
-        <section className="relative max-w-full mx-auto z-1">
-          <RetroGrid {...gridOptions} />
-          <div className="max-w-screen-xl z-10 mx-auto px-4 py-28 gap-12 md:px-8">
-            <div className="space-y-5 max-w-3xl leading-0 lg:leading-5 mx-auto text-center">
-              <h1 className="text-sm text-muted-foreground group font-geist mx-auto px-5 py-2 bg-muted/40 border border-border rounded-3xl w-fit flex items-center">
-                {title}
-                <ChevronRight className="inline w-4 h-4 ml-2 group-hover:translate-x-1 duration-300" />
-              </h1>
-              <h2 className="text-4xl tracking-tighter font-geist text-foreground mx-auto md:text-6xl">
-                {subtitle.regular}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
-                  {subtitle.gradient}
-                </span>
-              </h2>
-              <p className="max-w-2xl mx-auto text-muted-foreground">
-                {description}
-              </p>
-              <div className="items-center justify-center gap-x-3 space-y-3 sm:flex sm:space-y-0">
-                <span className="relative inline-block overflow-hidden rounded-full p-[1px]">
-                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,var(--primary)_50%,transparent_100%)]" />
-                  <div className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-background text-xs font-medium backdrop-blur-3xl">
-                    <a
-                      href={ctaHref}
-                      className="inline-flex rounded-full text-center group items-center w-full justify-center text-foreground hover:bg-muted/50 transition-all sm:w-auto py-4 px-10"
-                    >
-                      {ctaText}
-                    </a>
-                  </div>
-                </span>
-              </div>
-            </div>
-            {bottomImage && (
-              <div className="mt-32 mx-10 relative z-10">
-                <img
-                  src={bottomImage.light}
-                  className="w-full shadow-lg rounded-lg border border-gray-200 dark:hidden"
-                  alt="Dashboard preview"
-                />
-                <img
-                  src={bottomImage.dark}
-                  className="hidden w-full shadow-lg rounded-lg border border-gray-800 dark:block"
-                  alt="Dashboard preview"
-                />
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-    )
-  },
-)
-HeroSection.displayName = "HeroSection"
-
-export { HeroSection }

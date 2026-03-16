@@ -1,67 +1,73 @@
-import { Globe, Brain, Zap, Tag, Moon, Shield } from "lucide-react";
-
 export function Features() {
-  const features = [
+  const primaryFeature = {
+    title: "Your library. Always within reach.",
+    body: "Everything you save stays organized without you doing anything. Come back a day later or three months later and it is all still there, exactly where you left it.",
+  };
+
+  const secondaryFeatures = [
     {
-      icon: <Globe className="w-5 h-5" />,
-      title: "Works everywhere",
-      body: "One bookmarklet on every browser and every website.",
+      title: "Fast capture",
+      body: "Save anything in seconds without breaking what you were doing.",
     },
     {
-      icon: <Brain className="w-5 h-5" />,
-      title: "Understands meaning",
-      body: "Search by describing what you want. Not by remembering what you typed.",
+      title: "Works on every site",
+      body: "The bookmarklet works on any website, any browser, any page.",
     },
     {
-      icon: <Zap className="w-5 h-5" />,
-      title: "Background processing",
-      body: "AI runs in the background. Your workflow is never interrupted.",
+      title: "Stays useful over time",
+      body: "Your library grows with you. Something saved six months ago is just as easy to find today.",
     },
     {
-      icon: <Tag className="w-5 h-5" />,
-      title: "Auto tagged",
-      body: "Every save gets tagged automatically. You never organize anything manually.",
-    },
-    {
-      icon: <Moon className="w-5 h-5" />,
-      title: "Dark mode",
-      body: "Looks good at any hour.",
-    },
-    {
-      icon: <Shield className="w-5 h-5" />,
-      title: "Private by default",
-      body: "Everything you save stays in your account. No ads, no tracking, no sharing.",
+      title: "Calm organization",
+      body: "Nothing to organize, tag, or sort. Save it and forget about the admin work.",
     },
   ];
 
   return (
-    <section className="py-20 md:py-32 bg-foreground/[0.02]">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="mb-16">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary mb-4">
-            What you get
+    <section id="features" className="border-b border-border py-20 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mb-14 max-w-2xl">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
+            Core advantage
           </p>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
-            Built around how creators actually work
-          </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-card border border-border rounded-2xl p-5 hover:shadow-sm transition-shadow duration-200"
-            >
-              <div className="bg-primary/10 rounded-lg p-2 w-9 h-9 mb-3 flex items-center justify-center text-primary">
-                {feature.icon}
-              </div>
-              <h3 className="font-semibold text-foreground text-sm mb-1">
-                {feature.title}
-              </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {feature.body}
-              </p>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+          <div className="rounded-[2rem] border border-border bg-card p-8">
+            <h3 className="mt-10 max-w-lg font-serif text-4xl leading-tight tracking-[-0.03em] text-foreground">
+              {primaryFeature.title}
+            </h3>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
+              {primaryFeature.body}
+            </p>
+            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              {["One click save", "No folders needed", "Always searchable"].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-border bg-background px-4 py-4 text-sm text-muted-foreground"
+                >
+                  {item}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {secondaryFeatures.map((feature) => (
+              <div
+                key={feature.title}
+                className="rounded-[1.5rem] border border-border bg-card p-6"
+              >
+                <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-primary">
+                  Feature
+                </p>
+                <h3 className="mt-6 text-xl font-semibold text-foreground">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-base leading-7 text-muted-foreground">
+                  {feature.body}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -1,52 +1,55 @@
-import { Bookmark, Sparkles, Search } from "lucide-react";
-
 export function HowItWorks() {
   const steps = [
     {
-      icon: <Bookmark className="w-6 h-6 text-primary" />,
-      title: "Save in seconds",
-      body: "Click the bookmarklet on any page. Pick text, an image, or the whole page. Done.",
+      number: "01",
+      title: "Find something worth saving",
+      body: "You are browsing and come across something good. A headline, an ad, an image, a page.",
     },
     {
-      icon: <Sparkles className="w-6 h-6 text-primary" />,
-      title: "AI processes it",
-      body: "Every save gets embedded by AI in the background. It understands meaning, not just keywords.",
+      number: "02",
+      title: "Click and save",
+      body: "Click the bookmarklet in your browser. Pick text, an image, or the whole page. Takes three seconds.",
     },
     {
-      icon: <Search className="w-6 h-6 text-primary" />,
-      title: "Search in plain English",
-      body: "Type what you are looking for. Not tags. Not filters. Just describe it and Clippit finds it.",
+      number: "03",
+      title: "Find it when you need it",
+      body: "Open Clippit and everything you saved is right there. Search by keyword or scroll through your library.",
     },
   ];
 
   return (
-    <section className="py-20 md:py-32">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary mb-4">
+    <section id="workflow" className="border-b border-border py-20 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-8">
+        <div className="mb-14 text-center">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
             How it works
           </p>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-foreground">
+          <h2 className="mt-4 font-serif text-3xl leading-tight tracking-[-0.02em] text-foreground md:text-5xl">
             Three steps. That is it.
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className="bg-card border border-border rounded-2xl p-6 text-center hover:shadow-lg transition-all duration-200 flex flex-col items-center"
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                {step.icon}
+        <div className="rounded-[2rem] border border-border bg-card p-4 md:p-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            {steps.map((step) => (
+              <div
+                key={step.number}
+                className="rounded-[1.5rem] border border-border bg-background p-6"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
+                    {step.number}
+                  </p>
+                  <span className="h-px w-12 bg-border" />
+                </div>
+                <h3 className="mt-10 text-2xl font-semibold text-foreground">
+                  {step.title}
+                </h3>
+                <p className="mt-4 text-base leading-7 text-muted-foreground">
+                  {step.body}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-3">
-                {step.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {step.body}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

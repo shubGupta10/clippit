@@ -2,24 +2,36 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border mt-auto">
-      <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+    <footer className="border-t border-[var(--landing-border)]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 py-8 text-sm text-[var(--landing-muted)] md:flex-row md:items-center md:justify-between md:px-8">
         <div>
-          &copy; 2026 Clippit
+          <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-[var(--landing-accent)]">
+            Clippit
+          </p>
+          <p className="mt-2">
+            Research capture and retrieval for product, design, and marketing
+            teams.
+          </p>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-5">
           <Link
-            href="#"
-            className="hover:text-foreground transition-colors min-h-[44px] flex items-center justify-center p-2 -m-2"
+            href="/sign-in"
+            className="transition-colors hover:text-[var(--landing-text)]"
           >
-            Privacy
+            Sign in
           </Link>
           <Link
-            href="#"
-            className="hover:text-foreground transition-colors min-h-[44px] flex items-center justify-center p-2 -m-2"
+            href="/sign-up"
+            className="transition-colors hover:text-[var(--landing-text)]"
           >
-            Terms
+            Start free
           </Link>
+          <a
+            href="mailto:hello@clippit.app"
+            className="transition-colors hover:text-[var(--landing-text)]"
+          >
+            hello@clippit.app
+          </a>
         </div>
       </div>
     </footer>

@@ -8,7 +8,7 @@ const navItems = [
 
 export function FloatingHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
         <Link href="/" className="font-mono text-sm uppercase tracking-[0.28em] text-primary">
           Clippit
@@ -35,7 +35,7 @@ export function FloatingHeader() {
             href="/sign-up"
             className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
           >
-            Start free
+            Get started
           </Link>
         </div>
       </nav>

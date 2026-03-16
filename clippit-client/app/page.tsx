@@ -10,7 +10,7 @@ export default function Home() {
     <div className="dark">
       <main className="min-h-screen bg-background text-foreground">
         <FloatingHeader />
-        <HeroSection />
+        <HeroSection gridOptions={{ opacity: 0.32 }} />
         <HowItWorks />
         <Features />
         <WhyYouNeed />

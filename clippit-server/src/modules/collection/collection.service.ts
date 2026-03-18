@@ -1,28 +1,46 @@
 import AppError from "../../lib/AppError"
 import Collection from "./collection.model"
 import Item from "../item/item.model"
+import User from "../user/user.modal"
 import mongoose from "mongoose"
+
+const getUserByClerkId = async (clerkId: string) => {
+    const user = await User.findOne({ clerkId });
+    if (!user) throw new AppError("User not found", 404);
+    return user;
+}
 
 const createCollection = async (name: string, userId: string) => {
     if (!name || !userId) {
         throw new AppError("Please provide name", 400)
     }
 
+    const user = await getUserByClerkId(userId);
+
     const collection = await Collection.create({
         name,
-        owner: new mongoose.Types.ObjectId(userId)
+        owner: user._id
     })
-    return collection
+
+    return await collection.populate([
+        { path: "owner", select: "firstName lastName email clerkId" },
+        { path: "members", select: "firstName lastName email clerkId" },
+        { path: "itemIds", select: "-embeddings" }
+    ])
 }
 
 const getCollections = async (userId: string) => {
-    const userObjId = new mongoose.Types.ObjectId(userId)
+    const user = await getUserByClerkId(userId);
+
     const collections = await Collection.find({
         $or: [
-            { owner: userObjId },
-            { members: userObjId }
+            { owner: user._id },
+            { members: user._id }
         ]
     })
+    .populate("itemIds", '-embeddings')
+    .populate("owner", "firstName lastName email clerkId")
+    .populate("members", "firstName lastName email clerkId")
 
     return collections
 }
@@ -32,12 +50,18 @@ const getCollectionById = async (userId: string, collectionId: string) => {
         throw new AppError("Please provide collection Id", 404)
     }
 
-    const collection = await Collection.findById(collectionId);
+    const user = await getUserByClerkId(userId);
+
+    const collection = await Collection.findById(collectionId)
+        .populate("itemIds", '-embeddings')
+        .populate("owner", "firstName lastName email")
+        .populate("members", "firstName lastName email")
+
     if (!collection) {
         throw new AppError("Collection not found", 404)
     }
-    const isMember = collection.members.some(m => m.toString() === userId)
-    const isOwner = collection.owner.toString() === userId
+    const isMember = collection.members.some(m => (m as any)._id.toString() === user._id.toString())
+    const isOwner = (collection.owner as any)._id.toString() === user._id.toString()
 
     if (!isMember && !isOwner) {
         throw new AppError("You are not authorized to access this collection", 403)
@@ -50,13 +74,15 @@ const addItemToCollection = async (userId: string, collectionId: string, itemId:
         throw new AppError("Please provide CollectionId and ItemId", 400)
     }
 
+    const user = await getUserByClerkId(userId);
+
     const collection = await Collection.findById(collectionId)
     if (!collection) {
         throw new AppError("Collection not found", 404)
     }
 
-    const isOwner = collection.owner.toString() === userId
-    const isMember = collection.members.some(m => m.toString() === userId)
+    const isOwner = collection.owner.toString() === user._id.toString()
+    const isMember = collection.members.some(m => m.toString() === user._id.toString())
     if (!isOwner && !isMember) {
         throw new AppError("You are not authorized to add items to this collection", 403)
     }
@@ -82,6 +108,8 @@ const removeItemFromCollection = async (userId: string, collectionId: string, it
         throw new AppError("Please provide CollectionId and ItemId", 400)
     }
 
+    const user = await getUserByClerkId(userId);
+
     const collection = await Collection.findById(collectionId)
     if (!collection) {
         throw new AppError("Collection not found", 404)
@@ -92,8 +120,8 @@ const removeItemFromCollection = async (userId: string, collectionId: string, it
         throw new AppError("Item not found", 404)
     }
 
-    const isOwner = collection.owner.toString() === userId
-    const isItemSaver = item.userId.toString() === userId
+    const isOwner = collection.owner.toString() === user._id.toString()
+    const isItemSaver = item.userId === user._id.toString() || item.clerkId === userId
 
     if (!isOwner && !isItemSaver) {
         throw new AppError("You are not authorized to remove this item", 403)
@@ -111,12 +139,14 @@ const deleteCollection = async (userId: string, collectionId: string) => {
         throw new AppError("Please provide collection Id", 400)
     }
 
+    const user = await getUserByClerkId(userId);
+
     const collection = await Collection.findById(collectionId)
     if (!collection) {
         throw new AppError("Collection not found", 404)
     }
 
-    if (collection.owner.toString() !== userId) {
+    if (collection.owner.toString() !== user._id.toString()) {
         throw new AppError("You are not authorized to delete this collection", 403)
     }
 

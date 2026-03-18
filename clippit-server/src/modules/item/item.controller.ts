@@ -34,10 +34,7 @@ const getItemById = asyncWrapper(async (req: AuthRequest, res: Response) => {
     const clerkId = req.userId;
     if (!clerkId) throw new AppError('Unauthorized', 401);
 
-    const item = await ItemService.getItemById(req.params.id as string);
-
-    // Ownership check — service fetches by id only, so verify the item belongs to this user
-    if (item.clerkId !== clerkId) throw new AppError('Unauthorized', 401);
+    const item = await ItemService.getItemById(req.params.id as string, clerkId);
 
     res.status(200).json({
         success: true,

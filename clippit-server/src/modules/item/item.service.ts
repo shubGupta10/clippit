@@ -4,6 +4,7 @@ import User from "../user/user.modal";
 import { ItemType } from "./item.enum";
 import { IItem } from "./item.interface";
 import Item from "./item.model";
+import Collection from "../collection/collection.model";
 
 const createItem = async (data: Partial<IItem>, clerkId: string) => {
     const user = await User.findOne({ clerkId });
@@ -51,11 +52,31 @@ const fetchUserItem = async (clerkId: string) => {
         .lean();
 }
 
-const getItemById = async (itemId: string) => {
+const getItemById = async (itemId: string, clerkId?: string) => {
     const item = await Item.findById(itemId).select("-embeddings").lean();
     if (!item) {
         throw new AppError("Item not found", 404);
     }
+
+    if (clerkId) {
+        const user = await User.findOne({ clerkId });
+        if (!user) throw new AppError("User not found", 401);
+
+        // Check ownership
+        if (item.clerkId === clerkId) return item;
+
+        // Check collection access
+        if (item.collectionId) {
+            const collection = await Collection.findById(item.collectionId);
+            if (collection) {
+                const isMember = collection.members.some(m => m.toString() === user._id.toString());
+                const isOwner = collection.owner.toString() === user._id.toString();
+                if (isMember || isOwner) return item;
+            }
+        }
+        throw new AppError("Unauthorized", 401);
+    }
+
     return item;
 };
 

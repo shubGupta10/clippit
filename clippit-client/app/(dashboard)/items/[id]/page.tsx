@@ -134,7 +134,7 @@ export default function ItemOverviewPage() {
 
   if (!item) {
     return (
-      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full text-center mt-12">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
         <h2 className="text-xl font-semibold text-foreground mb-2">Item not found</h2>
         <p className="text-muted-foreground text-sm mb-6">This item may have been deleted.</p>
         <button onClick={() => router.push("/dashboard")} className="text-primary hover:underline text-sm">
@@ -152,7 +152,7 @@ export default function ItemOverviewPage() {
 
   return (
     <>
-      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full animate-in fade-in duration-500">
+      <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
         {/* Top bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <button

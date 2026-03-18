@@ -6,13 +6,21 @@ import { sendEmail } from "../../config/resend";
 import { sendInviteTemplate } from "../../lib/emailTemplates";
 import { Types } from "mongoose";
 
+const getUserByClerkId = async (clerkId: string) => {
+    const user = await User.findOne({ clerkId });
+    if (!user) throw new AppError("User not found", 404);
+    return user;
+}
+
 const sendInvite = async (userId: string, collectionId: string, email: string) => {
+    const user = await getUserByClerkId(userId);
+
     const collection = await Collection.findById(collectionId);
     if (!collection) {
         throw new AppError("Collection not found", 404)
     }
 
-    if (collection.owner.toString() !== userId.toString()) {
+    if (collection.owner.toString() !== user._id.toString()) {
         throw new AppError("Only owners can invite", 403)
     }
 
@@ -26,21 +34,21 @@ const sendInvite = async (userId: string, collectionId: string, email: string) =
         throw new AppError("Invite already sent", 400)
     }
 
-    const user = await User.findOne({ email });
+    const invitee = await User.findOne({ email });
 
-    if (user) {
-        if (user._id.toString() === userId.toString()) {
+    if (invitee) {
+        if (invitee._id.toString() === user._id.toString()) {
             throw new AppError("You cannot invite yourself", 400)
         }
 
-        if (collection.members.some(memberId => memberId.toString() === user._id.toString())) {
+        if (collection.members.some(memberId => memberId.toString() === invitee._id.toString())) {
             throw new AppError("User is already a member", 400)
         }
     }
 
     const invite = await Invites.create({
         collectionId: collectionId,
-        owner: userId,
+        owner: user._id.toString(),
         inviteeEmail: email,
         status: "pending"
     })
@@ -55,13 +63,14 @@ const sendInvite = async (userId: string, collectionId: string, email: string) =
 }
 
 const acceptInvite = async (inviteId: string, userId: string) => {
+    const user = await getUserByClerkId(userId);
+
     const invite = await Invites.findById(inviteId);
     if (!invite) {
         throw new AppError("Invite not found", 404)
     }
 
-    const user = await User.findById(userId);
-    if (user?.email !== invite.inviteeEmail) {
+    if (user.email !== invite.inviteeEmail) {
         throw new AppError("You cannot accept this invite as this is not yours", 403)
     }
 
@@ -74,7 +83,7 @@ const acceptInvite = async (inviteId: string, userId: string) => {
         throw new AppError("Collection has already been deleted", 404)
     }
 
-    collection.members.push(new Types.ObjectId(userId));
+    collection.members.push(new Types.ObjectId(user._id));
     await collection.save();
 
     invite.status = "accepted";
@@ -82,13 +91,14 @@ const acceptInvite = async (inviteId: string, userId: string) => {
 }
 
 const declineInvite = async (inviteId: string, userId: string) => {
+    const user = await getUserByClerkId(userId);
+
     const invite = await Invites.findById(inviteId);
     if (!invite) {
         throw new AppError("Invite not found", 404)
     }
 
-    const user = await User.findById(userId);
-    if (user?.email !== invite.inviteeEmail) {
+    if (user.email !== invite.inviteeEmail) {
         throw new AppError("You cannot decline this invite as this is not yours", 403)
     }
 
@@ -101,10 +111,7 @@ const declineInvite = async (inviteId: string, userId: string) => {
 }
 
 const getPendingInvites = async (userId: string) => {
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new AppError("User not found", 404)
-    }
+    const user = await getUserByClerkId(userId);
 
     const pendingInvites = await Invites.find({
         inviteeEmail: user.email,

@@ -1,9 +1,11 @@
 "use client";
 
 import { Item } from "@/lib/types";
-import { Trash2, ExternalLink } from "lucide-react";
+import { Trash2, ExternalLink, MoreHorizontal, FolderHeart } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AddToCollectionModal } from "@/components/collections/AddToCollectionModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +26,7 @@ interface ItemCardProps {
 export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
   const [imgError, setImgError] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   const router = useRouter();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -57,9 +60,17 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
   const renderBadge = () => {
     const label = item.type === "text" ? "Text" : item.type === "image" ? "Image" : "Link";
     return (
-      <span className="absolute top-4 right-4 px-2.5 py-0.5 text-xs font-medium rounded-full bg-accent text-accent-foreground shadow-sm z-10 pointer-events-none">
-        {label}
-      </span>
+      <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 z-10 pointer-events-none">
+        <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-accent text-accent-foreground shadow-sm">
+          {label}
+        </span>
+        {item.collectionId && (
+          <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full shadow-sm shrink-0 whitespace-nowrap overflow-hidden max-w-[150px] backdrop-blur-md">
+            <FolderHeart className="w-3 h-3 shrink-0" />
+            <span className="truncate">{item.collectionId.name}</span>
+          </span>
+        )}
+      </div>
     );
   };
 
@@ -187,9 +198,38 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
+            {!item.collectionId && (
+              <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <button
+                        className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors active:scale-95 outline-none"
+                        aria-label="More options"
+                      >
+                        <MoreHorizontal className="h-3.5 w-3.5" />
+                      </button>
+                    }
+                  />
+                  <DropdownMenuContent align="end" className="w-48 z-50">
+                    <DropdownMenuItem onClick={() => setShowCollectionModal(true)} className="gap-2 cursor-pointer font-medium text-[13px]">
+                      <FolderHeart className="h-4 w-4 text-muted-foreground" />
+                      <span>Add to collection</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <AddToCollectionModal
+        isOpen={showCollectionModal}
+        onClose={() => setShowCollectionModal(false)}
+        itemId={item._id}
+        currentCollectionId={item.collectionId?._id}
+      />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>

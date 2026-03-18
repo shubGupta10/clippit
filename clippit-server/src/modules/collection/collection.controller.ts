@@ -34,7 +34,7 @@ const getCollections = asyncWrapper(
 const getCollectionById = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
-        const { collectionId } = req.params;
+        const collectionId = req.params.id;
 
         const collection = await collectionService.getCollectionById(userId!, collectionId as string);
 
@@ -49,7 +49,7 @@ const getCollectionById = asyncWrapper(
 const addItemToCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
-        const { collectionId } = req.params
+        const collectionId = req.params.id;
         const { itemId } = req.body
 
         const collection = await collectionService.addItemToCollection(userId!, collectionId as string, itemId as string);
@@ -65,7 +65,7 @@ const addItemToCollection = asyncWrapper(
 const removeItemFromCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
-        const { collectionId } = req.params
+        const collectionId = req.params.id;
         const { itemId } = req.body
 
         const collection = await collectionService.removeItemFromCollection(userId!, collectionId as string, itemId as string);
@@ -81,7 +81,7 @@ const removeItemFromCollection = asyncWrapper(
 const deleteCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
-        const { collectionId } = req.params;
+        const collectionId = req.params.id;
 
         const collection = await collectionService.deleteCollection(userId!, collectionId as string);
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { Bookmark, LayoutDashboard, Settings2, Sun, Moon, LogOut, X } from "lucide-react";
+import { Bookmark, LayoutDashboard, Settings2, Sun, Moon, LogOut, X, FolderHeart } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface SidebarProps {
@@ -75,6 +75,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         >
           <LayoutDashboard className="h-5 w-5 shrink-0" />
           Dashboard
+        </Link>
+        <Link
+          href="/collections"
+          className={`flex items-center gap-3 px-3 py-2.5 transition-all text-sm rounded-xl border ${
+            pathname === "/collections"
+              ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
+              : "border-transparent text-muted-foreground/90 hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          <FolderHeart className="h-5 w-5 shrink-0" />
+          Collections
         </Link>
         <Link
           href="/settings"

@@ -29,6 +29,11 @@ const ItemSchema = new Schema<ItemDocument>(
             type: String,
             required: true
         },
+        collectionId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Collection',
+            default: null
+        },
         note: {
             type: String
         },

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { ItemType } from "./item.enum";
 
 export interface IItem {
@@ -7,6 +8,7 @@ export interface IItem {
     content?: string,
     imageUrl?: string,
     sourceUrl: string,
+    collectionId: Types.ObjectId | null,
     note?: string,
     tags?: string[],
     embeddings: number[],

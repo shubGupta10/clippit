@@ -2,7 +2,7 @@
 
 import { Item } from "@/lib/types";
 import { Trash2, ExternalLink, MoreHorizontal, FolderHeart } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AddToCollectionModal } from "@/components/collections/AddToCollectionModal";
@@ -27,7 +27,12 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
   const [imgError, setImgError] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,7 +102,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
                 onError={() => setImgError(true)}
                 loading="lazy"
               />
-              
+
               {/* Glassmorphism Title Overlay for Images */}
               {(item.title) && (
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
@@ -110,7 +115,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
           )}
 
           <div className={`p-5 flex flex-col flex-1 ${item.type === 'text' ? 'bg-muted/10' : item.type === 'link' ? 'bg-primary/[0.02]' : ''}`}>
-            
+
             {/* Text Cards */}
             {item.type === "text" && (
               <div className="relative">
@@ -198,7 +203,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
-            {!item.collectionId && (
+            {!item.collectionId && mounted && (
               <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                 <DropdownMenu>
                   <DropdownMenuTrigger

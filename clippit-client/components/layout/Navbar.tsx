@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import { Search, X, Menu, Sun, Moon } from "lucide-react";
 import { useSearchContext } from "@/lib/context/SearchContext";
-import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -13,7 +12,7 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const pathname = usePathname();
-  const { setTheme, theme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
   const { 
@@ -34,6 +33,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
     if (path === "/dashboard") return "Dashboard";
     if (path === "/setup") return "Setup";
     if (path === "/settings") return "Settings";
+    if (path === "/collections") return "Collections";
     if (path.startsWith("/items/")) return "Item Details";
     return "Clippit";
   };
@@ -44,13 +44,12 @@ export function Navbar({ onMenuClick }: NavbarProps) {
     clearSearch();
   };
 
-  // Prevent hydration tilt
   if (!mounted) return (
-    <header className="h-14 lg:h-16 bg-background border-b border-border flex items-center px-4 lg:px-6 w-full shrink-0" />
+    <header className="h-14 bg-card border-b border-border flex items-center px-4 lg:px-6 w-full shrink-0" />
   );
 
   return (
-    <header className="h-14 lg:h-16 bg-background border-b border-border flex items-center px-4 lg:px-6 sticky top-0 z-20 w-full shrink-0 justify-between gap-4">
+    <header className="h-14 bg-card border-b border-border flex items-center px-4 lg:px-6 sticky top-0 z-20 w-full shrink-0 justify-between gap-4">
       {/* Mobile Menu & Page Title */}
       <div className="flex items-center gap-2 overflow-hidden min-w-0 flex-1 sm:flex-initial">
         <button
@@ -60,18 +59,18 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight truncate">
+        <h1 className="text-sm font-semibold text-foreground tracking-tight truncate">
           {getPageTitle(pathname)}
         </h1>
       </div>
 
-      {/* Search Bar (Center) - Only on Dashboard */}
+      {/* Search Bar - Only on Dashboard */}
       {isDashboard ? (
-        <div className="flex flex-1 max-w-xl mx-auto px-2 sm:px-4">
-          <div className="relative group transition-all duration-300 w-full">
+        <div className="flex flex-1 max-w-lg mx-auto px-2 sm:px-4">
+          <div className="relative group w-full">
             <Search
               className={`absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors ${
-                isActive ? "text-primary" : "text-muted-foreground group-focus-within:text-primary"
+                isActive ? "text-primary" : "text-muted-foreground"
               }`}
             />
             <input
@@ -79,20 +78,20 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               placeholder="Search anything..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-10 pr-20 rounded-full text-sm transition-all duration-200 outline-none border border-border bg-muted hover:bg-muted/80 focus:bg-background focus:border-primary focus:ring-1 focus:ring-ring shadow-sm"
+              className="w-full h-10 pl-10 pr-20 rounded-full text-sm outline-none border border-border bg-muted hover:bg-muted focus:bg-background focus:border-primary focus:ring-1 focus:ring-ring text-foreground placeholder:text-muted-foreground shadow-sm transition-all duration-200"
             />
             
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 h-full">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {!isActive && (
-                <kbd className="hidden lg:flex items-center gap-1 font-mono text-[10px] font-medium text-muted-foreground bg-background border border-border px-1.5 py-0.5 rounded opacity-70 pointer-events-none transition-opacity group-focus-within:opacity-0">
-                  <span className="text-xs">⌘</span>K
+                <kbd className="hidden lg:flex items-center gap-0.5 font-mono text-[9px] font-medium text-muted-foreground bg-background border border-border px-1.5 py-0.5 rounded opacity-70 pointer-events-none group-focus-within:opacity-0 transition-opacity">
+                  <span className="text-[10px]">⌘</span>K
                 </kbd>
               )}
 
               {isActive && (
-                <div className="flex items-center gap-1 mr-0.5 pointer-events-auto h-full py-1">
+                <div className="flex items-center gap-1 pointer-events-auto py-1">
                   {!isSearching && (
-                    <span className="hidden lg:inline text-[9px] font-bold uppercase tracking-tight text-muted-foreground bg-muted px-2 py-0.5 rounded-md border border-border">
+                    <span className="hidden lg:inline text-[9px] font-bold uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
                       {resultCount}
                     </span>
                   )}
@@ -101,10 +100,10 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                   )}
                   <button
                     onClick={handleClear}
-                    className="p-1 rounded-full text-muted-foreground hover:bg-muted-foreground/10 hover:text-foreground transition-all active:scale-95"
+                    className="p-0.5 rounded text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     aria-label="Clear search"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X className="h-3 w-3" />
                   </button>
                 </div>
               )}
@@ -115,24 +114,14 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <div className="flex-1 sm:hidden lg:flex" />
       )}
 
-      {/* Right side (Desktop Theme Toggle) */}
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-full border border-border/50">
-          <Sun className={`h-4 w-4 transition-colors ${resolvedTheme === "light" ? "text-amber-500" : "text-muted-foreground"}`} />
-          <Switch
-            checked={resolvedTheme === "dark"}
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-            className="data-[state=checked]:bg-primary"
-          />
-          <Moon className={`h-4 w-4 transition-colors ${resolvedTheme === "dark" ? "text-blue-400" : "text-muted-foreground"}`} />
-        </div>
-        
-        {/* Mobile-only toggle (no switch, just icon button) */}
+      {/* Theme Toggle */}
+      <div className="flex items-center shrink-0">
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          className="sm:hidden p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border/50"
+          className="p-2 rounded-lg text-foreground hover:bg-muted transition-colors border border-border"
+          title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
         >
-          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
       </div>
     </header>

@@ -21,9 +21,10 @@ interface ItemCardProps {
   item: Item;
   onDelete: (id: string) => void;
   isDeleting?: boolean;
+  hideCollectionBadge?: boolean;
 }
 
-export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
+export function ItemCard({ item, onDelete, isDeleting, hideCollectionBadge }: ItemCardProps) {
   const [imgError, setImgError] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
@@ -62,144 +63,108 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
     ? new Date(item.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
     : "Just now";
 
-  const renderBadge = () => {
-    const label = item.type === "text" ? "Text" : item.type === "image" ? "Image" : "Link";
-    return (
-      <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 z-10 pointer-events-none">
-        <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-accent text-accent-foreground shadow-sm">
-          {label}
-        </span>
-        {item.collectionId && (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full shadow-sm shrink-0 whitespace-nowrap overflow-hidden max-w-[150px] backdrop-blur-md">
-            <FolderHeart className="w-3 h-3 shrink-0" />
-            <span className="truncate">{item.collectionId.name}</span>
-          </span>
-        )}
-      </div>
-    );
-  };
-
   return (
     <>
       <div
         onClick={handleCardClick}
-        className={`relative flex flex-col h-full bg-card border border-border rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group cursor-pointer ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
+        className={`relative flex flex-col h-full bg-card rounded-xl overflow-hidden group cursor-pointer transition-all duration-200 ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
       >
-        {/* Magic hover glow effect - visible only on hover */}
-        <div className="absolute inset-x-0 -top-px h-px w-1/2 mx-auto bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Collection Badge */}
+        {item.collectionId && !hideCollectionBadge && (
+          <div className="absolute top-3 right-3 z-10 pointer-events-none">
+            <span className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-primary bg-card border border-border rounded-full">
+              <FolderHeart className="w-3 h-3 shrink-0" />
+              <span className="truncate max-w-[120px]">{item.collectionId.name}</span>
+            </span>
+          </div>
+        )}
 
-        {renderBadge()}
+        {/* Image */}
+        {item.type === "image" && item.imageUrl && !imgError && (
+          <div className="w-full overflow-hidden bg-muted">
+            <img
+              src={item.imageUrl}
+              alt={item.title || "Saved image"}
+              className="w-full aspect-[4/3] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              onError={() => setImgError(true)}
+              loading="lazy"
+            />
+          </div>
+        )}
 
-        {/* Content Area */}
-        <div className="flex flex-col flex-1 relative z-10">
-          {item.type === "image" && item.imageUrl && !imgError && (
-            <div className="w-full relative overflow-hidden bg-muted rounded-t-xl group-hover:rounded-t-none transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              <img
-                src={item.imageUrl}
-                alt={item.title || "Saved image"}
-                className="w-full aspect-[4/3] object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={() => setImgError(true)}
-                loading="lazy"
-              />
+        {/* Content */}
+        <div className="p-4 flex flex-col flex-1">
 
-              {/* Glassmorphism Title Overlay for Images */}
-              {(item.title) && (
-                <div className="absolute bottom-0 left-0 right-0 p-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                  <h4 className="font-semibold text-white text-sm sm:text-base leading-tight line-clamp-2 tracking-tight drop-shadow-md">
-                    {item.title}
-                  </h4>
-                </div>
+          {/* Text Cards */}
+          {item.type === "text" && (
+            <p className="text-foreground text-[14px] line-clamp-5 leading-relaxed">
+              {item.content || "No text content available"}
+            </p>
+          )}
+
+          {/* Link Cards */}
+          {item.type === "link" && (
+            <div className="flex flex-col gap-1.5 flex-1">
+              <h4 className="font-semibold text-foreground text-[15px] leading-snug line-clamp-3">
+                {item.title || domain || "Saved Link"}
+              </h4>
+              {domain && (
+                <p className="text-muted-foreground text-[12px] truncate mt-auto">
+                  {domain}
+                </p>
               )}
             </div>
           )}
 
-          <div className={`p-5 flex flex-col flex-1 ${item.type === 'text' ? 'bg-muted/10' : item.type === 'link' ? 'bg-primary/[0.02]' : ''}`}>
+          {/* Image fallback title */}
+          {item.type === "image" && imgError && item.title && (
+            <h4 className="font-semibold text-foreground text-[15px] leading-tight line-clamp-2">
+              {item.title}
+            </h4>
+          )}
 
-            {/* Text Cards */}
-            {item.type === "text" && (
-              <div className="relative">
-                <div className="absolute -top-2 -left-2 text-2xl text-muted-foreground/20 font-serif leading-none">&ldquo;</div>
-                <p className="text-foreground/90 text-[15px] line-clamp-5 leading-relaxed tracking-tight relative z-10 pt-2 pb-1">
-                  {item.content || "No text content available"}
-                </p>
-              </div>
-            )}
+          {/* Image title below image */}
+          {item.type === "image" && !imgError && item.title && (
+            <h4 className="font-semibold text-foreground text-[15px] leading-snug line-clamp-2 mt-1">
+              {item.title}
+            </h4>
+          )}
 
-            {/* Link Cards */}
-            {item.type === "link" && (
-              <div className="pr-12 pt-1 flex flex-col h-full">
-                <h4 className="font-semibold text-foreground text-[17px] leading-snug mb-2.5 line-clamp-3 tracking-tight group-hover:text-primary transition-colors">
-                  {item.title || domain || "Saved Link"}
-                </h4>
-                <p className="text-muted-foreground/80 text-[13px] truncate max-w-full flex items-center gap-1.5 mt-auto bg-muted/30 px-2 py-1.5 rounded-md w-fit border border-border/50">
-                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{item.sourceUrl}</span>
-                </p>
-              </div>
-            )}
+          {/* Note on image cards */}
+          {item.type === "image" && item.note && (
+            <p className="text-muted-foreground text-[13px] line-clamp-2 mt-2 italic">
+              {item.note}
+            </p>
+          )}
 
-            {/* Image Text Fallback (if image fails or has notes) */}
-            {(item.type === "image" || imgError) && item.title && imgError && (
-              <h4 className="font-semibold text-foreground text-base leading-tight mb-2 line-clamp-2 tracking-tight">
-                {item.title}
-              </h4>
-            )}
 
-            {(item.type === "image" || imgError) && item.note && (
-              <p className="text-muted-foreground/80 text-sm line-clamp-3 mt-3 italic border-l-2 border-primary/30 pl-3">
-                {item.note}
-              </p>
-            )}
-
-            {/* Tags area */}
-            {item.tags && item.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-auto pt-5">
-                {item.tags.map((tag) => (
-                  <span key={tag} className="bg-secondary/80 text-secondary-foreground text-[11px] font-medium tracking-wide rounded-full px-2.5 py-1 hover:bg-secondary transition-colors border border-border/40">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3.5 border-t border-border/50 flex items-center justify-between bg-card text-[13px] text-muted-foreground relative z-20">
-          <div className="flex items-center gap-2 overflow-hidden min-w-0">
-            {faviconUrl ? (
-              <img src={faviconUrl} alt="" className="w-4 h-4 rounded-[3px] shrink-0 opacity-80 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" />
-            ) : (
-              <div className="w-4 h-4 rounded-[3px] shrink-0 bg-muted flex items-center justify-center">
-                <ExternalLink className="w-2.5 h-2.5" />
-              </div>
-            )}
-            <span className="font-medium truncate group-hover:text-foreground transition-colors tracking-tight" title={domain}>
-              {domain || "clippit"}
-            </span>
-            <span className="w-1 h-1 rounded-full bg-border shrink-0 mx-0.5" />
-            <span className="shrink-0 tracking-tight">{formattedDate}</span>
+        <div className="px-4 py-3 border-t border-border flex items-center justify-between text-[12px] text-muted-foreground bg-card group-hover:bg-muted/5 transition-colors">
+          <div className="flex items-center gap-1.5 overflow-hidden min-w-0">
+            <span className="truncate font-medium">{domain || "clippit"}</span>
+            <span className="shrink-0">·</span>
+            <span className="shrink-0">{formattedDate}</span>
           </div>
 
-          {/* Action buttons — invisible by default, fade in on hover */}
-          <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 z-20 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Action buttons — fade in on hover */}
+            <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-150">
             {item.sourceUrl && (
               <button
                 onClick={handleExternalLink}
-                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors active:scale-95"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
                 title="Open source"
-                aria-label="Open source URL"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
               </button>
             )}
             <button
               onClick={handleDeleteClick}
-              className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors active:scale-95"
+              className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-muted rounded-md transition-colors"
               disabled={isDeleting}
-              title="Delete item"
-              aria-label="Delete item"
+              title="Delete"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
@@ -209,7 +174,7 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
                   <DropdownMenuTrigger
                     render={
                       <button
-                        className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors active:scale-95 outline-none"
+                        className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors outline-none"
                         aria-label="More options"
                       >
                         <MoreHorizontal className="h-3.5 w-3.5" />
@@ -217,13 +182,18 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
                     }
                   />
                   <DropdownMenuContent align="end" className="w-48 z-50">
-                    <DropdownMenuItem onClick={() => setShowCollectionModal(true)} className="gap-2 cursor-pointer font-medium text-[13px]">
+                    <DropdownMenuItem onClick={() => setShowCollectionModal(true)} className="gap-2 cursor-pointer text-[13px]">
                       <FolderHeart className="h-4 w-4 text-muted-foreground" />
                       <span>Add to collection</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+            )}
+            </div>
+
+            {faviconUrl && (
+              <img src={faviconUrl} alt="" className="w-3.5 h-3.5 rounded-sm shrink-0" />
             )}
           </div>
         </div>
@@ -241,14 +211,14 @@ export function ItemCard({ item, onDelete, isDeleting }: ItemCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this item?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the saved item from Clippit. This action cannot be undone.
+              This will permanently delete the saved item. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive"
             >
               Delete
             </AlertDialogAction>

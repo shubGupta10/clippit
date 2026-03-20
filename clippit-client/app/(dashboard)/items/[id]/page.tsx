@@ -274,8 +274,8 @@ export default function ItemOverviewPage() {
             </div>
           )}
 
-          {/* Notes & Tags Area - Two Column Layout on Desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl bg-muted/20 border border-border rounded-2xl p-6 sm:p-8 mt-4">
+          {/* Notes Area */}
+          <div className="max-w-5xl bg-muted border border-border rounded-2xl p-6 sm:p-8 mt-4">
             
             {/* Note section */}
             <div>
@@ -300,59 +300,6 @@ export default function ItemOverviewPage() {
                 </p>
               )}
             </div>
-
-            {/* Tags section */}
-            <div>
-              <div className="flex items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-secondary-foreground/50" />
-                  <span className="text-sm font-bold text-foreground uppercase tracking-widest">Collections</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2.5">
-                {(isEditing ? tagsValue : item.tags || []).map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1.5 bg-secondary text-secondary-foreground font-medium rounded-full px-4 py-1.5 text-sm shadow-sm border border-transparent hover:border-border transition-colors"
-                  >
-                    <Tag className="w-3.5 h-3.5 opacity-70" />
-                     {tag}
-                    {isEditing && (
-                      <button
-                        onClick={() => removeTag(tag)}
-                        className="ml-1 -mr-1 p-0.5 hover:bg-secondary-foreground/10 rounded-full text-secondary-foreground/70 hover:text-destructive transition-colors"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </span>
-                ))}
-
-                {isEditing && (
-                  <div className="flex items-center gap-2">
-                    <input
-                      value={newTag}
-                      onChange={(e) => setNewTag(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                      placeholder="Add tag..."
-                      className="text-sm bg-background border border-border rounded-full px-4 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/50 w-32 shadow-sm transition-all"
-                    />
-                    <button
-                      onClick={addTag}
-                      className="p-1.5 text-primary hover:text-primary-foreground hover:bg-primary rounded-full transition-colors border border-primary/20 bg-primary/10"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                {!isEditing && (item.tags || []).length === 0 && (
-                  <span className="text-[15px] text-muted-foreground/50 italic">No tags associated.</span>
-                )}
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

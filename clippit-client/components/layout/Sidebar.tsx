@@ -4,12 +4,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { Bookmark, LayoutDashboard, Settings2, Sun, Moon, LogOut, X, FolderHeart } from "lucide-react";
+import {
+  Bookmark,
+  LayoutDashboard,
+  Settings2,
+  Sun,
+  Moon,
+  LogOut,
+  X,
+  FolderHeart,
+  ChevronRight,
+  Wrench,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface SidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
+}
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ReactNode;
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -21,10 +38,46 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Close sidebar on route change (mobile)
   useEffect(() => {
     onClose?.();
   }, [pathname]);
+
+  const mainNav: NavItem[] = [
+    { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-[18px] w-[18px]" /> },
+    { href: "/collections", label: "Collections", icon: <FolderHeart className="h-[18px] w-[18px]" /> },
+  ];
+
+  const settingsNav: NavItem[] = [
+    { href: "/setup", label: "Setup", icon: <Wrench className="h-[18px] w-[18px]" /> },
+    { href: "/settings", label: "Settings", icon: <Settings2 className="h-[18px] w-[18px]" /> },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(href);
+  };
+
+  const NavLink = ({ item }: { item: NavItem }) => {
+    const active = isActive(item.href);
+    return (
+      <Link
+        href={item.href}
+        className={`group flex items-center gap-3 px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+          active
+            ? "bg-muted text-foreground"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+        }`}
+      >
+        <span className={`transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>
+          {item.icon}
+        </span>
+        <span className="flex-1">{item.label}</span>
+        {active && (
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+        )}
+      </Link>
+    );
+  };
 
   return (
     <aside
@@ -36,14 +89,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       `}
     >
       {/* Logo */}
-      <div className="p-6 flex items-center justify-between border-b border-border h-16 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-primary/10 rounded-lg p-1.5">
-            <Bookmark className="h-5 w-5 text-primary" />
+      <div className="px-5 flex items-center justify-between h-14 shrink-0">
+        <Link href="/dashboard" className="flex items-center gap-2.5">
+          <div className="bg-muted rounded-lg p-1.5">
+            <Bookmark className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-xl font-bold text-foreground tracking-tight">Clippit</span>
-        </div>
-        {/* Close button — mobile only */}
+          <span className="text-lg font-bold text-foreground tracking-tight">Clippit</span>
+        </Link>
         <button
           onClick={onClose}
           className="lg:hidden p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -53,77 +105,51 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="p-4 flex-1 flex flex-col gap-1 overflow-y-auto">
-        <Link
-          href="/setup"
-          className={`flex items-center gap-3 px-3 py-2.5 transition-all text-sm rounded-xl border ${
-            pathname === "/setup"
-              ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-              : "border-transparent text-muted-foreground/90 hover:bg-muted hover:text-foreground"
-          }`}
-        >
-          <Settings2 className="h-5 w-5 shrink-0" />
-          Setup
-        </Link>
-        <Link
-          href="/dashboard"
-          className={`flex items-center gap-3 px-3 py-2.5 transition-all text-sm rounded-xl border ${
-            pathname === "/dashboard"
-              ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-              : "border-transparent text-muted-foreground/90 hover:bg-muted hover:text-foreground"
-          }`}
-        >
-          <LayoutDashboard className="h-5 w-5 shrink-0" />
-          Dashboard
-        </Link>
-        <Link
-          href="/collections"
-          className={`flex items-center gap-3 px-3 py-2.5 transition-all text-sm rounded-xl border ${
-            pathname === "/collections"
-              ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-              : "border-transparent text-muted-foreground/90 hover:bg-muted hover:text-foreground"
-          }`}
-        >
-          <FolderHeart className="h-5 w-5 shrink-0" />
-          Collections
-        </Link>
-        <Link
-          href="/settings"
-          className={`flex items-center gap-3 px-3 py-2.5 transition-all text-sm rounded-xl border ${
-            pathname === "/settings"
-              ? "bg-primary text-primary-foreground font-bold border-primary shadow-sm"
-              : "border-transparent text-muted-foreground/90 hover:bg-muted hover:text-foreground"
-          }`}
-        >
-          <Settings2 className="h-5 w-5 shrink-0" />
-          Settings
-        </Link>
+      {/* Navigation */}
+      <nav className="px-3 pt-4 flex-1 flex flex-col gap-6 overflow-y-auto">
+        <div className="flex flex-col gap-1">
+          <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+            Main
+          </p>
+          {mainNav.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+            Configure
+          </p>
+          {settingsNav.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
       </nav>
 
       {/* Footer: user + theme */}
-      <div className="p-4 border-t border-border flex flex-col gap-3 shrink-0">
+      <div className="px-3 py-3 border-t border-border flex flex-col gap-2 shrink-0">
         {user && (
-          <div className="flex items-center justify-between bg-muted/30 p-2 rounded-xl border border-border/50">
-            <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-muted transition-colors group">
+            <div className="flex items-center gap-2.5 overflow-hidden">
               {user.imageUrl ? (
                 <img
                   src={user.imageUrl}
                   alt="User avatar"
-                  className="h-8 w-8 rounded-full bg-muted object-cover shrink-0 ring-2 ring-border"
+                  className="h-7 w-7 rounded-full bg-muted object-cover shrink-0"
                 />
               ) : (
-                <div className="h-8 w-8 rounded-full bg-muted shrink-0 ring-2 ring-border" />
+                <div className="h-7 w-7 rounded-full bg-muted shrink-0" />
               )}
-              <span className="text-sm font-semibold text-foreground truncate">
+              <span className="text-[13px] font-medium text-foreground truncate">
                 {user.fullName || user.username || "User"}
               </span>
             </div>
             <button
               onClick={() => signOut({ redirectUrl: "/" })}
-              className="p-2 text-muted-foreground hover:text-destructive transition-all shrink-0 rounded-lg hover:bg-destructive/10 active:scale-95"
+              className="p-1.5 text-muted-foreground hover:text-destructive transition-colors shrink-0 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100"
               title="Sign out"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5" />
             </button>
           </div>
         )}
@@ -131,7 +157,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="lg:hidden flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/50 text-sm text-muted-foreground hover:text-foreground transition-all active:scale-95 group"
+            className="lg:hidden flex items-center justify-between px-2 py-2 rounded-lg bg-muted text-[13px] text-muted-foreground hover:text-foreground transition-colors"
           >
             <div className="flex items-center gap-2">
               {theme === "dark" ? (
@@ -146,8 +172,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </>
               )}
             </div>
-            <div className="w-8 h-4 rounded-full bg-border/40 relative">
-              <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${theme === 'dark' ? 'left-[18px]' : 'left-0.5'}`} />
+            <div className="w-7 h-3.5 rounded-full bg-border relative">
+              <div className={`absolute top-0.5 w-2.5 h-2.5 rounded-full bg-foreground transition-all ${theme === 'dark' ? 'left-[14px]' : 'left-0.5'}`} />
             </div>
           </button>
         )}

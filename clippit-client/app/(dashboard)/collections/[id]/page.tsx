@@ -68,7 +68,6 @@ export default function CollectionDetailPage() {
 
     const handleDeleteItem = async (itemId: string) => {
         try {
-            // Note: This deletes from application, falling back to basic REST pattern.
             await api.delete(`/api/items/delete-item/${itemId}`);
             toast.success("Item deleted");
             setCollection((prev) => 
@@ -81,24 +80,21 @@ export default function CollectionDetailPage() {
 
     if (!isLoaded || isFetching) {
         return (
-            <div className="p-6 max-w-7xl mx-auto flex items-center justify-center min-h-[50vh]">
-                <div className="animate-pulse text-muted-foreground flex items-center gap-3">
-                    <FolderHeart className="w-6 h-6 animate-bounce text-primary" />
-                    <span>Loading collection...</span>
-                </div>
+            <div className="p-6 max-w-7xl mx-auto flex items-center justify-center min-h-[60vh]">
+                <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
             </div>
         );
     }
 
     if (error || !collection) {
         return (
-            <div className="p-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <div className="p-4 sm:p-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-                <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
-                <p className="text-muted-foreground mb-6 max-w-md">{error}</p>
+                <h1 className="text-xl font-bold text-foreground mb-2">Access Denied</h1>
+                <p className="text-muted-foreground text-sm mb-6 max-w-md">{error}</p>
                 <button
                     onClick={() => router.push("/collections")}
-                    className="text-primary hover:text-primary/80 font-medium transition-colors"
+                    className="text-primary hover:underline text-sm font-medium transition-colors"
                 >
                     &larr; Back to Collections
                 </button>
@@ -107,94 +103,109 @@ export default function CollectionDetailPage() {
     }
 
     const isOwner = collection.owner.clerkId === user?.id;
+    const memberCount = collection.members.length + 1;
 
     return (
-        <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
             {/* Header Area */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b border-border/50 pb-6">
-                <div>
-                    <button
-                        onClick={() => router.push("/collections")}
-                        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors w-fit"
-                    >
-                        <ChevronLeft className="w-4 h-4" />
-                        Back
-                    </button>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
-                            <FolderHeart className="w-6 h-6" />
+            <div className="flex flex-col gap-6 mb-8 lg:mb-10">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col gap-4">
+                        <button
+                            onClick={() => router.push("/collections")}
+                            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors w-fit"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                            Back to Collections
+                        </button>
+                        
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-muted rounded-xl text-primary">
+                                <FolderHeart className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                                    {collection.name}
+                                </h1>
+                                {!isOwner && (
+                                    <p className="text-[13px] text-muted-foreground font-medium mt-0.5">
+                                        by {collection.owner.firstName} {collection.owner.lastName}
+                                    </p>
+                                )}
+                            </div>
                         </div>
-                        <h1 className="text-3xl font-bold text-foreground tracking-tight">
-                            {collection.name}
-                        </h1>
                     </div>
-                    {!isOwner && (
-                        <p className="text-muted-foreground flex items-center gap-2">
-                            <span>Owned by</span>
-                            <span className="font-semibold text-foreground">
-                                {collection.owner.firstName} {collection.owner.lastName}
-                            </span>
-                        </p>
-                    )}
+
+                    <div className="flex items-center gap-3 bg-muted p-1.5 pl-4 rounded-xl border border-border overflow-visible">
+                        {/* Members Card */}
+                        <div className="flex items-center gap-3 pr-4 border-r border-border overflow-visible">
+                            <div className="flex items-center text-xs font-medium text-muted-foreground">
+                                <Users className="w-4 h-4 mr-2" />
+                                <span className="mr-2.5">{memberCount}</span>
+                            </div>
+                            <div className="flex -space-x-2">
+                                <MemberAvatar
+                                    key="owner-avatar"
+                                    firstName={collection.owner.firstName}
+                                    lastName={collection.owner.lastName}
+                                    fullName={`${collection.owner.firstName} ${collection.owner.lastName} (Owner)`}
+                                    tooltipAlign={collection.members.length === 0 ? "right" : "center"}
+                                />
+                                {collection.members.map((member, index) => (
+                                    <MemberAvatar
+                                        key={`member-${member._id || index}`}
+                                        firstName={member.firstName}
+                                        lastName={member.lastName}
+                                        fullName={`${member.firstName} ${member.lastName}`}
+                                        tooltipAlign={index === collection.members.length - 1 ? "right" : "center"}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Share Button (Owner Only) */}
+                        {isOwner && (
+                            <button
+                                onClick={() => setIsShareModalOpen(true)}
+                                className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary px-4 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95"
+                            >
+                                <Share2 className="w-4 h-4" />
+                                Share
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 bg-muted/30 p-2 pl-4 rounded-2xl border border-border/50 overflow-visible">
-                    {/* Members List */}
-                    <div className="flex items-center gap-3 pr-4 border-r border-border/50 overflow-visible">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                            <Users className="w-4 h-4 mr-2" />
-                            <span className="mr-3">{collection.members.length + 1}</span>
-                        </div>
-                        <div className="flex -space-x-2">
-                            <MemberAvatar
-                                key="owner-avatar"
-                                firstName={collection.owner.firstName}
-                                lastName={collection.owner.lastName}
-                                fullName={`${collection.owner.firstName} ${collection.owner.lastName} (Owner)`}
-                                tooltipAlign={collection.members.length === 0 ? "right" : "center"}
-                            />
-                            {collection.members.map((member, index) => (
-                                <MemberAvatar
-                                    key={`member-${member._id || index}`}
-                                    firstName={member.firstName}
-                                    lastName={member.lastName}
-                                    fullName={`${member.firstName} ${member.lastName}`}
-                                    tooltipAlign={index === collection.members.length - 1 ? "right" : "center"}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Share Button (Owner Only) */}
-                    {isOwner && (
-                        <button
-                            onClick={() => setIsShareModalOpen(true)}
-                            className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95"
-                        >
-                            <Share2 className="w-4 h-4" />
-                            Share
-                        </button>
-                    )}
+                {/* Subtitle / Description if any */}
+                <div className="text-[13px] text-muted-foreground font-medium border-t border-border pt-4">
+                    {collection.itemIds.length} {collection.itemIds.length === 1 ? "item" : "items"} saved in this collection
                 </div>
             </div>
 
             {/* Content Area */}
             {collection.itemIds.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[40vh] bg-card border border-border/50 rounded-2xl shadow-sm text-center p-8">
-                    <FolderHeart className="w-12 h-12 text-muted-foreground/30 mb-4" />
-                    <h3 className="text-xl font-semibold text-foreground mb-2">This collection is empty</h3>
-                    <p className="text-muted-foreground max-w-md">
-                        Add items to this collection from your Dashboard or use the Clippit browser extension to save directly here.
+                <div className="flex flex-col items-center justify-center min-h-[40vh] bg-card rounded-2xl text-center p-8">
+                    <div className="bg-muted p-4 rounded-full mb-4">
+                        <FolderHeart className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">This collection is empty</h3>
+                    <p className="text-muted-foreground text-sm max-w-sm">
+                        Add items to this collection from your Dashboard or use the browser extension.
                     </p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-6 auto-rows-[300px]">
+                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
                     {collection.itemIds.map((item, index) => (
-                        <ItemCard
-                            key={item._id || `item-${index}`}
-                            item={item}
-                            onDelete={handleDeleteItem}
-                        />
+                        <div 
+                            key={item._id || `item-${index}`} 
+                            className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                            style={{ animationDelay: `${Math.min(index * 30, 400)}ms` }}
+                        >
+                            <ItemCard
+                                item={item}
+                                onDelete={handleDeleteItem}
+                            />
+                        </div>
                     ))}
                 </div>
             )}

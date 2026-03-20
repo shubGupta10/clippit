@@ -3,7 +3,9 @@ import { HeroSection } from "@/components/hero-section-dark";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Features } from "@/components/landing/Features";
 import { WhyYouNeed } from "@/components/landing/WhyYouNeed";
+import { Collections } from "@/components/landing/Collections";
 import { CTASection } from "@/components/landing/CTASection";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
   return (
@@ -11,10 +13,25 @@ export default function Home() {
       <main className="min-h-screen bg-background text-foreground">
         <FloatingHeader />
         <HeroSection gridOptions={{ opacity: 0.32 }} />
-        <HowItWorks />
-        <Features />
-        <WhyYouNeed />
+        
+        <div className="py-16 md:py-24">
+          <HowItWorks />
+        </div>
+        
+        <div className="py-16 md:py-24">
+          <Features />
+        </div>
+        
+        <div className="py-16 md:py-24">
+          <WhyYouNeed />
+        </div>
+        
+        <div className="py-20 md:py-28">
+          <Collections />
+        </div>
+        
         <CTASection />
+        <Footer />
       </main>
     </div>
   );

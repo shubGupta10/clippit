@@ -27,6 +27,10 @@ const UserSchema = new Schema<IUserDocument>(
             enum: Object.values(UserRole),
             default: UserRole.USER
         },
+        onboardingComplete: {
+            type: Boolean,
+            default: false
+        },
     },
     { timestamps: true }
 );

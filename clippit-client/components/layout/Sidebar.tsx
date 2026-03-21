@@ -15,6 +15,7 @@ import {
   FolderHeart,
   ChevronRight,
   Wrench,
+  Plus,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -44,6 +45,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const mainNav: NavItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-[18px] w-[18px]" /> },
+    { href: "/save", label: "Save Manually", icon: <Plus className="h-[18px] w-[18px]" /> },
     { href: "/collections", label: "Collections", icon: <FolderHeart className="h-[18px] w-[18px]" /> },
   ];
 

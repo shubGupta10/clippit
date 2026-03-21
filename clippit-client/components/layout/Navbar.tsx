@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Search, X, Menu, Sun, Moon } from "lucide-react";
 import { useSearchContext } from "@/lib/context/SearchContext";
 import { useTheme } from "next-themes";

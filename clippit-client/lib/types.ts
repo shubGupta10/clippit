@@ -30,3 +30,13 @@ export interface Invite {
   inviteeEmail: string;
   status: string;
 }
+export interface User {
+  _id: string;
+  clerkId: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: string;
+  onboardingComplete: boolean;
+  createdAt: string;
+}

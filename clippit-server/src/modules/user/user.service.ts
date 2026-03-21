@@ -11,7 +11,16 @@ const getUserByClerkId = async (clerkId: string) => {
     return await User.findOne({ clerkId });
 };
 
+const completeOnboarding = async (clerkId: string) => {
+    return await User.findOneAndUpdate(
+        { clerkId },
+        { onboardingComplete: true },
+        { new: true }
+    );
+};
+
 export const userService = {
     createUser,
     getUserByClerkId,
+    completeOnboarding,
 };

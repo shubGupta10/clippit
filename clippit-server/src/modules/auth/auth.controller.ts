@@ -29,19 +29,13 @@ const clerkWebhookHandler = async (req: Request, res: Response) => {
             email: email_addresses[0].email_address,
             firstName: first_name,
             lastName: last_name,
+            onboardingComplete: false,
         });
     }
 
     res.status(200).json({ message: 'ok' });
 };
 
-const getMe = asyncWrapper(async (req: AuthRequest, res: Response) => {
-    const user = await userService.getUserByClerkId(req.userId!);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
-});
-
 export {
-    clerkWebhookHandler,
-    getMe
+    clerkWebhookHandler
 }

@@ -13,6 +13,7 @@ import searchRouter from "./routes/search/search.router"
 import itemRoutes from "./routes/item/item.router"
 import collectionRouters from "./routes/collection/collection.router"
 import invitesRouters from "./routes/invites/invites.router"
+import userRouter from "./routes/user/user.router"
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,7 @@ app.use("/api/items", itemRoutes);
 app.use("/api", searchRouter);
 app.use("/api/collections", collectionRouters);
 app.use("/api/invites", invitesRouters);
+app.use("/api/user", userRouter);
 
 app.get('/', (req, res) => {
     res.json({ status: 'ok' });

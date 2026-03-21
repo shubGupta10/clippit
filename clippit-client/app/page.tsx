@@ -12,7 +12,13 @@ export default function Home() {
     <div className="dark">
       <main className="min-h-screen bg-background text-foreground">
         <FloatingHeader />
-        <HeroSection gridOptions={{ opacity: 0.32 }} />
+        <HeroSection 
+          gridOptions={{ opacity: 0.32 }} 
+          bottomImage={{
+            light: "/opengraph-image.png",
+            dark: "/opengraph-image.png",
+          }}
+        />
         
         <div className="py-16 md:py-24">
           <HowItWorks />

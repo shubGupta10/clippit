@@ -20,6 +20,9 @@ export const metadata: Metadata = {
       { rel: "android-chrome-512x512", url: "/android-chrome-512x512.png" },
     ],
   },
+  openGraph: {
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({

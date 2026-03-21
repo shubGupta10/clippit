@@ -5,6 +5,7 @@ import { ItemType } from "./item.enum";
 import { IItem } from "./item.interface";
 import Item from "./item.model";
 import Collection from "../collection/collection.model";
+import { getFriendlyDateLabel } from "./item.utils";
 
 const createItem = async (data: Partial<IItem>, clerkId: string) => {
     const user = await User.findOne({ clerkId });
@@ -46,11 +47,28 @@ const createItem = async (data: Partial<IItem>, clerkId: string) => {
 }
 
 const fetchUserItem = async (clerkId: string) => {
-    return await Item.find({ clerkId })
+
+    const items = await Item.find({ clerkId })
         .select("-embeddings")
         .sort({ createdAt: -1 })
         .lean();
-}
+
+    // Transform the flat list into the grouped "Google Photos" structure
+    const groupedFeed = items.reduce((acc: any[], item) => {
+        const label = getFriendlyDateLabel(item.createdAt || new Date());
+
+        let group = acc.find(g => g.label === label);
+
+        if (!group) {
+            group = { label, items: [] };
+            acc.push(group);
+        }
+
+        group.items.push(item);
+        return acc;
+    }, []);
+    return groupedFeed;
+};
 
 const getItemById = async (itemId: string, clerkId?: string) => {
     const item = await Item.findById(itemId).select("-embeddings").lean();

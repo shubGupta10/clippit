@@ -21,12 +21,12 @@ const fetchUserItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
     const clerkId = req.userId;
     if (!clerkId) throw new AppError('Unauthorized', 401);
 
-    const items = await ItemService.fetchUserItem(clerkId);
+    const groupedItems = await ItemService.fetchUserItem(clerkId);
 
     res.status(200).json({
         success: true,
-        count: items.length,
-        data: items,
+        count: groupedItems.length,
+        data: groupedItems,
     });
 });
 

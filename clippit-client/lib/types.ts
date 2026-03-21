@@ -13,6 +13,11 @@ export interface Item {
   createdAt: string;
 }
 
+export interface GroupedItem {
+  label: string;
+  items: Item[];
+}
+
 export interface Collection {
   _id: string;
   name: string;

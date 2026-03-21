@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { Item } from "@/lib/types";
+import { useCallback, useState, useMemo } from "react";
+import { Item, GroupedItem } from "@/lib/types";
 import { ItemCard } from "./ItemCard";
 import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
@@ -25,8 +25,8 @@ function SkeletonCard() {
   );
 }
 
-export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
-  const [items, setItems] = useState<Item[]>(initialItems || []);
+export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
+  const [items, setItems] = useState<GroupedItem[]>(initialItems || []);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { deleteItem, isDeleting } = useItems();
   const { searchResults, isSearching, searchQuery, setSearchQuery, clearSearch } = useSearchContext();
@@ -46,12 +46,20 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
   }, [api]);
 
   const handleDelete = async (id: string) => {
-    setItems((prev) => prev.filter((item) => item._id !== id));
+    setItems((prev) => 
+      prev.map(group => ({
+        ...group,
+        items: group.items.filter(item => item._id !== id)
+      })).filter(group => group.items.length > 0)
+    );
     await deleteItem(id);
   };
 
+  const totalItemsCount = useMemo(() => {
+    return items.reduce((acc, group) => acc + group.items.length, 0);
+  }, [items]);
+
   const isSearchActive = searchQuery.trim().length > 0;
-  const displayItems = isSearchActive ? searchResults : items;
 
   return (
     <>
@@ -77,7 +85,7 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-primary/80" />
               <p className="text-sm font-medium text-muted-foreground tracking-tight">
-                {items.length} {items.length === 1 ? "item" : "items"} saved
+                {totalItemsCount} {totalItemsCount === 1 ? "item" : "items"} saved
               </p>
             </div>
           )}
@@ -116,12 +124,12 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
         )}
 
         {/* Empty: no items */}
-        {!isSearching && !isSearchActive && items.length === 0 && <EmptyState />}
+        {!isSearching && !isSearchActive && totalItemsCount === 0 && <EmptyState />}
 
-        {/* Results grid */}
-        {!isSearching && displayItems.length > 0 && (
+        {/* Results grid (Search - Flat) */}
+        {!isSearching && isSearchActive && searchResults.length > 0 && (
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
-            {displayItems.map((item, i) => (
+            {searchResults.map((item, i) => (
               <div 
                 key={item._id} 
                 className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
@@ -132,6 +140,35 @@ export function ItemGrid({ initialItems }: { initialItems: Item[] }) {
                   onDelete={handleDelete}
                   isDeleting={isDeleting === item._id}
                 />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Results grid (Main Feed - Grouped) */}
+        {!isSearching && !isSearchActive && items.length > 0 && (
+          <div className="space-y-10">
+            {items.map((group) => (
+              <div key={group.label}>
+                <h3 className="text-lg font-semibold mb-5 text-foreground/90 flex items-center gap-2">
+                  <span className="w-1 h-5 bg-primary/20 rounded-full" />
+                  {group.label}
+                </h3>
+                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+                  {group.items.map((item, i) => (
+                    <div 
+                      key={item._id} 
+                      className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                      style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
+                    >
+                      <ItemCard
+                        item={item}
+                        onDelete={handleDelete}
+                        isDeleting={isDeleting === item._id}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

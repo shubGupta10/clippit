@@ -12,5 +12,7 @@ export interface IItem {
     note?: string,
     tags?: string[],
     embeddings: number[],
-    isEmbedded: boolean
+    isEmbedded: boolean,
+    createdAt?: Date,
+    updatedAt?: Date
 }

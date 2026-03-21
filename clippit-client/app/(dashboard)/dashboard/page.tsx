@@ -1,11 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { ItemGrid } from "@/components/items/ItemGrid";
+import { GroupedItem } from "@/lib/types";
 
 export default async function DashboardPage() {
   const authState = await auth();
   const token = await authState.getToken();
 
-  let initialItems = [];
+  let initialItems: GroupedItem[] = [];
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/items/get-user-items`, {

@@ -45,7 +45,7 @@ export default function SetupPage() {
                 <div className="space-y-6">
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: `<a href="${escapedBookmarklet}" draggable="true" style="display:inline-flex;align-items:center;justify-content:center;padding:0 24px;height:48px;background-color:var(--primary);color:var(--primary-foreground);border-radius:8px;font-size:15px;font-weight:500;text-decoration:none;cursor:grab;box-shadow:0 1px 3px rgba(0,0,0,0.1);white-space:nowrap;transition:opacity 0.15s;" onmousedown="this.style.cursor='grabbing'" onmouseup="this.style.cursor='grab'">Save to Clippit</a>`
+                      __html: `<a href="${escapedBookmarklet}" draggable="true" style="display:inline-flex;align-items:center;justify-content:center;padding:0 24px;height:48px;background-color:var(--primary);color:var(--primary-foreground);border-radius:8px;font-size:15px;font-weight:500;text-decoration:none;cursor:grab;box-shadow:0 1px 3px rgba(0,0,0,0.1);white-space:nowrap;transition:opacity 0.15s;" onmousedown="this.style.cursor='grabbing'" onmouseup="this.style.cursor='grab'" onclick="alert('Drag this button to your bookmarks bar. Then click it from there when you want to save something.');return false;">Save to Clippit</a>`
                     }}
                   />
                   <div className="flex items-center gap-2 text-muted-foreground text-sm">

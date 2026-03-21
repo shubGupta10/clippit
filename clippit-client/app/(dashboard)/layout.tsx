@@ -9,22 +9,34 @@ import { useRouter, usePathname } from "next/navigation";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, loading } = useDBUser();
+  const { user: dbUser, loading: dbLoading, clerkUser, isLoaded: isClerkLoaded } = useDBUser();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && user && !user.onboardingComplete && pathname !== "/onboarding") {
-      router.push("/onboarding");
-    }
-  }, [user, loading, pathname, router]);
+    if (isClerkLoaded && clerkUser) {
+      if (!dbLoading) {
+        console.log("Onboarding Redirection Check:", {
+          hasDbUser: !!dbUser,
+          onboardingComplete: dbUser?.onboardingComplete,
+          pathname
+        });
 
-  // Don't show the dashboard layout if we are on the onboarding page
+        if (!dbUser || !dbUser.onboardingComplete) {
+          if (pathname !== "/onboarding") {
+            console.log("Redirecting to /onboarding...");
+            router.push("/onboarding");
+          }
+        }
+      }
+    }
+  }, [dbUser, dbLoading, isClerkLoaded, clerkUser, pathname, router]);
+
   if (pathname === "/onboarding") {
     return <>{children}</>;
   }
 
-  if (loading) {
+  if (dbLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -41,9 +53,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 bg-black/40 backdrop-blur-[2px] z-40 lg:hidden transition-opacity duration-300 ${
-          isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-[2px] z-40 lg:hidden transition-opacity duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsSidebarOpen(false)}
       />
 

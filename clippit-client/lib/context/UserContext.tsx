@@ -8,6 +8,8 @@ import { User } from "@/lib/types";
 interface UserContextType {
   user: User | null;
   loading: boolean;
+  clerkUser: any;
+  isLoaded: boolean;
   refreshUser: () => Promise<void>;
   completeOnboarding: () => Promise<void>;
 }
@@ -24,6 +26,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (!clerkUser) return;
     try {
       const response = await api.get("/api/user/get-me");
+      console.log("DB User Fetched Success:", response.data);
       setUser(response.data);
     } catch (error) {
       console.error("Error fetching DB user:", error);
@@ -44,6 +47,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLoaded) {
+      console.log("Clerk User State:", { isLoaded, clerkUserId: clerkUser?.id });
       if (clerkUser) {
         fetchUser();
       } else {
@@ -53,7 +57,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [isLoaded, clerkUser]);
 
   return (
-    <UserContext.Provider value={{ user, loading, refreshUser: fetchUser, completeOnboarding }}>
+    <UserContext.Provider value={{ 
+      user, 
+      loading, 
+      clerkUser, 
+      isLoaded, 
+      refreshUser: fetchUser, 
+      completeOnboarding 
+    }}>
       {children}
     </UserContext.Provider>
   );

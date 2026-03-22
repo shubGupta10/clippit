@@ -5,6 +5,7 @@ export interface IItem {
     userId: string;
     clerkId: string;
     type: ItemType,
+    title?: string,
     content?: string,
     imageUrl?: string,
     sourceUrl: string,

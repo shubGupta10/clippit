@@ -217,9 +217,9 @@ export default function ItemOverviewPage() {
               </span>
             </div>
             
-            {item.title && (
+            {(item.title || item.pageTitle) && (
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight tracking-tight mt-2">
-                {item.title}
+                {item.title || item.pageTitle}
               </h1>
             )}
             
@@ -300,6 +300,19 @@ export default function ItemOverviewPage() {
                 </p>
               )}
             </div>
+ 
+            {/* Page Description section */}
+            {item.pageDescription && (
+              <div className="mt-8 pt-8 border-t border-border/50">
+                <span className="text-sm font-bold text-foreground uppercase tracking-widest flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Webpage Overview
+                </span>
+                <p className="text-[15px] text-muted-foreground leading-relaxed">
+                  {item.pageDescription}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

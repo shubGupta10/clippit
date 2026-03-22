@@ -19,6 +19,9 @@ const ItemSchema = new Schema<ItemDocument>(
             enum: Object.values(ItemType),
             required: true
         },
+        title: {
+            type: String
+        },
         content: {
             type: String
         },

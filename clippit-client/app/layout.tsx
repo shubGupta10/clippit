@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { UserProvider } from "@/lib/context/UserContext";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: "Clippit — Save anything. Find it instantly.",
@@ -40,6 +41,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <UserProvider>
               {children}
+              <Analytics />
             </UserProvider>
           </ThemeProvider>
           <Toaster />

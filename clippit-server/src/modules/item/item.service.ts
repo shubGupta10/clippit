@@ -6,6 +6,9 @@ import { IItem } from "./item.interface";
 import Item from "./item.model";
 import Collection from "../collection/collection.model";
 import { getFriendlyDateLabel } from "./item.utils";
+import redis from "../../config/redis";
+
+const CACHE_TTL = 3600;
 
 const createItem = async (data: Partial<IItem>, clerkId: string) => {
     const user = await User.findOne({ clerkId });
@@ -37,6 +40,7 @@ const createItem = async (data: Partial<IItem>, clerkId: string) => {
     }
 
     const item = await Item.create(data);
+    await redis.del(`item:feed:${clerkId}`);
 
     await embeddingQueue.add("generate-embedding", {
         itemId: item._id.toString(),
@@ -47,6 +51,12 @@ const createItem = async (data: Partial<IItem>, clerkId: string) => {
 }
 
 const fetchUserItem = async (clerkId: string) => {
+    const cacheKey = `item:feed:${clerkId}`
+
+    const cacheData = await redis.get(cacheKey);
+    if (cacheData) {
+        return JSON.parse(cacheData);
+    }
 
     const items = await Item.find({ clerkId })
         .select("-embeddings")
@@ -67,10 +77,18 @@ const fetchUserItem = async (clerkId: string) => {
         group.items.push(item);
         return acc;
     }, []);
+
+    await redis.set(cacheKey, JSON.stringify(groupedFeed), "EX", CACHE_TTL)
     return groupedFeed;
 };
 
 const getItemById = async (itemId: string, clerkId?: string) => {
+    const cacheKey = `item:${itemId}`;
+    const cacheData = await redis.get(cacheKey);
+    if (cacheData) {
+        return JSON.parse(cacheData);
+    }
+
     const item = await Item.findById(itemId).select("-embeddings").lean();
     if (!item) {
         throw new AppError("Item not found", 404);
@@ -95,11 +113,13 @@ const getItemById = async (itemId: string, clerkId?: string) => {
         throw new AppError("Unauthorized", 401);
     }
 
+    await redis.set(cacheKey, JSON.stringify(item), "EX", CACHE_TTL);
     return item;
 };
 
 const deleteItem = async (itemId: string, clerkId: string) => {
     const deleted = await Item.findOneAndDelete({ _id: itemId, clerkId });
+    await redis.del(`item:feed:${clerkId}`);
     if (!deleted) {
         throw new AppError("Item not found or not authorized", 404);
     }
@@ -133,6 +153,7 @@ const editItem = async (
         { $set: updatedData },
         { returnDocument: "after" }
     );
+    await redis.del(`item:feed:${clerkId}`);
 
     if (!item) {
         throw new AppError("Item not found or Unauthorized", 404)
@@ -164,6 +185,7 @@ const clearAllItems = async (clerkId: string) => {
     const result = await Item.deleteMany({
         clerkId
     })
+    await redis.del(`item:feed:${clerkId}`);
     if (result.deletedCount === 0) {
         throw new AppError("No Items found to delete", 404)
     }

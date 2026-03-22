@@ -164,11 +164,13 @@ const editItem = async (
 const updateItemEmbedding = async (
     itemId: string,
     embedding: number[],
-    tags: string[]
+    tags: string[],
+    pageTitle?: string,
+    pageDescription?: string
 ) => {
     const item = await Item.findByIdAndUpdate(
         itemId,
-        { embeddings: embedding, tags, isEmbedded: true },
+        { embeddings: embedding, tags, pageTitle, pageDescription, isEmbedded: true },
         { returnDocument: 'after' }
     );
 

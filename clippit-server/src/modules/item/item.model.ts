@@ -41,6 +41,12 @@ const ItemSchema = new Schema<ItemDocument>(
             type: [String],
             default: []
         },
+        pageTitle: {
+            type: String
+        },
+        pageDescription: {
+            type: String
+        },
         embeddings: {
             type: [Number],
             default: []

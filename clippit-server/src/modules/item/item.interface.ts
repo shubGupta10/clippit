@@ -11,6 +11,8 @@ export interface IItem {
     collectionId: Types.ObjectId | null,
     note?: string,
     tags?: string[],
+    pageTitle?: string,
+    pageDescription?: string,
     embeddings: number[],
     isEmbedded: boolean,
     createdAt?: Date,

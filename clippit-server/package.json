@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
+    "@types/cheerio": "^0.22.35",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",

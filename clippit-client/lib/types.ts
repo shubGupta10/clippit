@@ -9,6 +9,8 @@ export interface Item {
   tags: string[];
   note?: string;
   collectionId?: { _id: string, name: string } | null;
+  pageTitle?: string;
+  pageDescription?: string;
   isEmbedded: boolean;
   createdAt: string;
 }

@@ -105,9 +105,14 @@ export function ItemCard({ item, onDelete, isDeleting, hideCollectionBadge }: It
           {/* Link Cards */}
           {item.type === "link" && (
             <div className="flex flex-col gap-1.5 flex-1">
-              <h4 className="font-semibold text-foreground text-[15px] leading-snug line-clamp-3">
-                {item.title || domain || "Saved Link"}
+              <h4 className="font-semibold text-foreground text-sm leading-snug line-clamp-2">
+                {item.pageTitle || domain || "Saved Link"}
               </h4>
+              {item.pageDescription && (
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {item.pageDescription}
+                </p>
+              )}
               {domain && (
                 <p className="text-muted-foreground text-[12px] truncate mt-auto">
                   {domain}

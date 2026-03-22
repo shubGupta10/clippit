@@ -5,6 +5,7 @@ import Invites from "./invites.model";
 import { sendEmail } from "../../config/resend";
 import { sendInviteTemplate } from "../../lib/emailTemplates";
 import { Types } from "mongoose";
+import redis from "../../config/redis";
 
 const getUserByClerkId = async (clerkId: string) => {
     const user = await User.findOne({ clerkId });
@@ -88,6 +89,13 @@ const acceptInvite = async (inviteId: string, userId: string) => {
 
     invite.status = "accepted";
     await invite.save();
+
+    const owner = await User.findById(collection.owner);
+    if (owner) {
+        await redis.del(`collections:list:${owner.clerkId}`);
+    }
+    await redis.del(`collections:list:${userId}`);
+    await redis.del(`collection:detail:${collection._id}`);
 }
 
 const declineInvite = async (inviteId: string, userId: string) => {

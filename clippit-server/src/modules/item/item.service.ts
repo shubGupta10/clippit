@@ -176,6 +176,10 @@ const updateItemEmbedding = async (
 
     if (!item) throw new AppError('Item not found', 404);
 
+    // Clear cache
+    await redis.del(`item:feed:${item.clerkId}`);
+    await redis.del(`item:${itemId}`);
+
     return item;
 };
 

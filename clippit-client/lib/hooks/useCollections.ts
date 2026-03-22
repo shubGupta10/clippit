@@ -1,5 +1,8 @@
+"use client";
+
 import { useApi } from "@/lib/axios";
 import { Collection } from "@/lib/types";
+import { useSWRAuth } from "./useSWRAuth";
 
 export const useCollections = () => {
     const api = useApi();
@@ -9,9 +12,17 @@ export const useCollections = () => {
         return response.data;
     };
 
+    const useUserCollections = () => {
+        return useSWRAuth<Collection[]>('/api/collections');
+    };
+
     const getCollectionById = async (id: string): Promise<{ success: boolean; data: Collection }> => {
         const response = await api.get(`/api/collections/${id}`);
         return response.data;
+    };
+
+    const useCollectionDetail = (id: string) => {
+        return useSWRAuth<Collection>(id ? `/api/collections/${id}` : null);
     };
 
     const createCollection = async (name: string): Promise<{ success: boolean; data: Collection }> => {
@@ -36,7 +47,9 @@ export const useCollections = () => {
 
     return {
         getCollections,
+        useUserCollections,
         getCollectionById,
+        useCollectionDetail,
         createCollection,
         deleteCollection,
         addItemToCollection,

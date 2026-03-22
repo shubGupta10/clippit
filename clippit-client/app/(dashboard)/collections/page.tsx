@@ -18,43 +18,22 @@ import { ShareModal } from "@/components/collections/ShareModal";
 export default function CollectionsPage() {
     const { user, isLoaded } = useUser();
     const router = useRouter();
-    const { getCollections, createCollection, deleteCollection } = useCollections();
-    const { getPendingInvites, acceptInvite, declineInvite, sendInvite } = useInvites();
+    const { useUserCollections, createCollection, deleteCollection } = useCollections();
+    const { useUserPendingInvites, acceptInvite, declineInvite, sendInvite } = useInvites();
 
-    const [collections, setCollections] = useState<Collection[]>([]);
-    const [invites, setInvites] = useState<Invite[]>([]);
-    const [isFetching, setIsFetching] = useState(true);
+    const { data: collections = [], mutate: mutateCollections, isLoading: colLoading } = useUserCollections();
+    const { data: invites = [], mutate: mutateInvites, isLoading: invLoading } = useUserPendingInvites();
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [sharingCollectionId, setSharingCollectionId] = useState<string | null>(null);
-
-    const fetchData = async () => {
-        setIsFetching(true);
-        try {
-            const [colRes, invRes] = await Promise.all([
-                getCollections(),
-                getPendingInvites()
-            ]);
-            if (colRes.success) setCollections(colRes.data || []);
-            if (invRes.success) setInvites(invRes.data || []);
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to load collections data.");
-        } finally {
-            setIsFetching(false);
-        }
-    };
-
-    useEffect(() => {
-        if (isLoaded && user) fetchData();
-    }, [isLoaded, user]);
 
     const handleCreate = async (name: string) => {
         try {
             const res = await createCollection(name);
             if (res.success) {
                 toast.success("Collection created!");
-                setCollections((prev) => [res.data, ...prev]);
+                mutateCollections(); 
             }
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Failed to create collection.");
@@ -63,14 +42,20 @@ export default function CollectionsPage() {
     };
 
     const handleDelete = async (id: string) => {
+        await mutateCollections(
+            (prev) => prev?.filter(c => c._id !== id),
+            { revalidate: false }
+        );
+
         try {
             const res = await deleteCollection(id);
             if (res.success) {
                 toast.success("Collection deleted.");
-                setCollections((prev) => prev.filter(c => c._id !== id));
             }
         } catch (error) {
             toast.error("Failed to delete collection.");
+        } finally {
+            mutateCollections();
         }
     };
 
@@ -97,7 +82,8 @@ export default function CollectionsPage() {
             const res = await acceptInvite(id);
             if (res.success) {
                 toast.success("Invite accepted!");
-                fetchData(); // Refresh everything
+                mutateInvites();
+                mutateCollections(); 
             }
         } catch (error) {
             toast.error("Failed to accept invite.");
@@ -109,14 +95,14 @@ export default function CollectionsPage() {
             const res = await declineInvite(id);
             if (res.success) {
                 toast.success("Invite declined.");
-                setInvites(prev => prev.filter(i => i._id !== id));
+                mutateInvites();
             }
         } catch (error) {
             toast.error("Failed to decline invite.");
         }
     };
 
-    if (!isLoaded || isFetching) {
+    if (!isLoaded || colLoading || invLoading) {
         return (
             <div className="p-6 max-w-7xl mx-auto flex items-center justify-center min-h-[50vh]">
                 <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />

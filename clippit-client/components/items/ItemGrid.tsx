@@ -7,7 +7,6 @@ import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSearchContext } from "@/lib/context/SearchContext";
 import { SearchX, RotateCw, X } from "lucide-react";
-import { useApi } from "@/lib/axios";
 
 function SkeletonCard() {
   return (
@@ -26,33 +25,36 @@ function SkeletonCard() {
 }
 
 export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
-  const [items, setItems] = useState<GroupedItem[]>(initialItems || []);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { data: items = [], mutate, isValidating } = useItems().useUserItems(initialItems);
   const { deleteItem, isDeleting } = useItems();
-  const { searchResults, isSearching, searchQuery, setSearchQuery, clearSearch } = useSearchContext();
-  const api = useApi();
+  const { searchResults, isSearching, searchQuery, clearSearch } = useSearchContext();
 
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      const res = await api.get("/api/items/get-user-items");
-      const fresh = res.data?.data;
-      if (Array.isArray(fresh)) setItems(fresh);
-    } catch (err) {
-      console.error("Refresh failed", err);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [api]);
+  const handleRefresh = useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   const handleDelete = async (id: string) => {
-    setItems((prev) => 
-      prev.map(group => ({
-        ...group,
-        items: group.items.filter(item => item._id !== id)
-      })).filter(group => group.items.length > 0)
+    await mutate(
+      (prevItems) => {
+        if (!prevItems) return [];
+        return prevItems
+          .map(group => ({
+            ...group,
+            items: group.items.filter(item => item._id !== id)
+          }))
+          .filter(group => group.items.length > 0);
+      },
+      { revalidate: false }
     );
-    await deleteItem(id);
+
+    try {
+      await deleteItem(id);
+    } catch (err) {
+      console.error("Delete failed", err);
+    } finally {
+
+      mutate();
+    }
   };
 
   const totalItemsCount = useMemo(() => {
@@ -74,7 +76,7 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
                   : <>No results for <span className="font-medium text-foreground">&ldquo;{searchQuery}&rdquo;</span></>
                 }
               </p>
-              <button 
+              <button
                 onClick={clearSearch}
                 className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground transition-all duration-200 active:scale-95"
               >
@@ -93,12 +95,12 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
           {!isSearchActive && (
             <button
               onClick={handleRefresh}
-              disabled={isRefreshing}
+              disabled={isValidating}
               title="Refresh"
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-all px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[44px] active:scale-95"
             >
-              <RotateCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+              <RotateCw className={`h-3.5 w-3.5 ${isValidating ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">{isValidating ? "Refreshing..." : "Refresh"}</span>
             </button>
           )}
         </div>
@@ -130,8 +132,8 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
         {!isSearching && isSearchActive && searchResults.length > 0 && (
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
             {searchResults.map((item, i) => (
-              <div 
-                key={item._id} 
+              <div
+                key={item._id}
                 className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
                 style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
               >
@@ -156,8 +158,8 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
                 </h3>
                 <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
                   {group.items.map((item, i) => (
-                    <div 
-                      key={item._id} 
+                    <div
+                      key={item._id}
                       className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
                       style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
                     >

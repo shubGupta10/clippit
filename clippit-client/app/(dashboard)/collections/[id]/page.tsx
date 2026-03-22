@@ -19,40 +19,12 @@ export default function CollectionDetailPage() {
     const { id } = useParams<{ id: string }>();
     const { user, isLoaded } = useUser();
     const router = useRouter();
-    const { getCollectionById } = useCollections();
+    const { useCollectionDetail } = useCollections();
     const { sendInvite } = useInvites();
     const api = useApi();
 
-    const [collection, setCollection] = useState<Collection | null>(null);
-    const [isFetching, setIsFetching] = useState(true);
+    const { data: collection, mutate, isLoading: isFetching, error: fetchError } = useCollectionDetail(id);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchCollection = async () => {
-        setIsFetching(true);
-        setError(null);
-        try {
-            const res = await getCollectionById(id);
-            if (res.success) {
-                setCollection(res.data);
-            } else {
-                setError("Collection not found or access denied.");
-            }
-        } catch (err: any) {
-            if (err?.response?.status === 403) {
-                setError("You do not have permission to view this collection.");
-            } else {
-                setError("Failed to load collection.");
-            }
-            console.error(err);
-        } finally {
-            setIsFetching(false);
-        }
-    };
-
-    useEffect(() => {
-        if (isLoaded && user && id) fetchCollection();
-    }, [isLoaded, user, id]);
 
     const handleShare = async (email: string) => {
         try {
@@ -67,14 +39,18 @@ export default function CollectionDetailPage() {
     };
 
     const handleDeleteItem = async (itemId: string) => {
+        await mutate(
+            (prev) => prev ? { ...prev, itemIds: prev.itemIds.filter((it) => it._id !== itemId) } : prev,
+            { revalidate: false }
+        );
+
         try {
             await api.delete(`/api/items/delete-item/${itemId}`);
             toast.success("Item deleted");
-            setCollection((prev) => 
-                prev ? { ...prev, itemIds: prev.itemIds.filter((it) => it._id !== itemId) } : prev
-            );
         } catch (error) {
             toast.error("Failed to delete item");
+        } finally {
+            mutate();
         }
     };
 
@@ -86,12 +62,16 @@ export default function CollectionDetailPage() {
         );
     }
 
-    if (error || !collection) {
+    if (fetchError || !collection) {
+        const errorMessage = fetchError?.response?.status === 403 
+            ? "You do not have permission to view this collection."
+            : "Collection not found or access denied.";
+
         return (
             <div className="p-4 sm:p-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <AlertCircle className="w-12 h-12 text-destructive mb-4" />
                 <h1 className="text-xl font-bold text-foreground mb-2">Access Denied</h1>
-                <p className="text-muted-foreground text-sm mb-6 max-w-md">{error}</p>
+                <p className="text-muted-foreground text-sm mb-6 max-w-md">{errorMessage}</p>
                 <button
                     onClick={() => router.push("/collections")}
                     className="text-primary hover:underline text-sm font-medium transition-colors"

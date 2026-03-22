@@ -1,5 +1,8 @@
+"use client";
+
 import { useApi } from "@/lib/axios";
 import { Invite } from "@/lib/types";
+import { useSWRAuth } from "./useSWRAuth";
 
 export const useInvites = () => {
     const api = useApi();
@@ -7,6 +10,10 @@ export const useInvites = () => {
     const getPendingInvites = async (): Promise<{ success: boolean; data: Invite[] }> => {
         const response = await api.get('/api/invites/pending');
         return response.data;
+    };
+
+    const useUserPendingInvites = () => {
+        return useSWRAuth<Invite[]>('/api/invites/pending');
     };
 
     const sendInvite = async (collectionId: string, email: string): Promise<{ success: boolean; message: string }> => {
@@ -26,6 +33,7 @@ export const useInvites = () => {
 
     return {
         getPendingInvites,
+        useUserPendingInvites,
         sendInvite,
         acceptInvite,
         declineInvite,

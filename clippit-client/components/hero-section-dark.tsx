@@ -168,7 +168,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               </Link>
             </div>
 
-            {bottomImage && <HeroImage light={bottomImage.light} dark={bottomImage.dark} />}
+            {/* {bottomImage && <HeroImage light={bottomImage.light} dark={bottomImage.dark} />} */}
           </div>
         </section>
       </div>

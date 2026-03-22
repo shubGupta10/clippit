@@ -14,10 +14,6 @@ export default function Home() {
         <FloatingHeader />
         <HeroSection 
           gridOptions={{ opacity: 0.32 }} 
-          bottomImage={{
-            light: "/opengraph-image.png",
-            dark: "/opengraph-image.png",
-          }}
         />
         
         <div className="py-16 md:py-24">

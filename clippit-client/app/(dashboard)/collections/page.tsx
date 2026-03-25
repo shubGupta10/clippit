@@ -123,24 +123,24 @@ export default function CollectionsPage() {
                 />
             )}
 
-            <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-xl font-bold text-foreground tracking-tight">Collections</h1>
-                    <p className="text-[13px] text-muted-foreground mt-0.5">{collections.length} {collections.length === 1 ? "collection" : "collections"}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{collections.length} {collections.length === 1 ? "collection" : "collections"}</p>
                 </div>
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary px-4 py-2 rounded-lg font-medium text-sm transition-all active:scale-95"
+                    className="group flex items-center gap-2 bg-primary text-primary-foreground hover:opacity-90 hover:shadow-lg px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 ease-out active:scale-95"
                 >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90" />
                     <span>New Collection</span>
                 </button>
             </div>
 
             {collections.length === 0 ? (
-                <div className="flex flex-col items-center justify-center min-h-[40vh] bg-card rounded-2xl text-center p-8">
-                    <div className="bg-muted p-4 rounded-full mb-4">
-                        <FolderHeart className="w-8 h-8 text-primary" />
+                <div className="flex flex-col items-center justify-center min-h-[40vh] bg-card rounded-2xl text-center p-8 border border-dashed border-border hover:border-primary transition-colors duration-300">
+                    <div className="bg-secondary p-4 rounded-full mb-4 animate-in zoom-in duration-500">
+                        <FolderHeart className="w-8 h-8 text-primary animate-pulse" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">No collections yet</h3>
                     <p className="text-muted-foreground text-sm max-w-xs mb-6">
@@ -148,9 +148,9 @@ export default function CollectionsPage() {
                     </p>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary px-5 py-2 rounded-lg font-medium text-sm transition-all active:scale-95"
+                        className="group flex items-center gap-2 bg-primary text-primary-foreground hover:opacity-90 hover:shadow-lg px-5 py-2 rounded-lg font-medium text-sm transition-all duration-300 ease-out active:scale-95"
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 transition-transform duration-300 group-hover:rotate-90" />
                         <span>Create Collection</span>
                     </button>
                 </div>
@@ -158,7 +158,7 @@ export default function CollectionsPage() {
                 <div className="space-y-10">
                     {myCollections.length > 0 && (
                         <section>
-                            <h2 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4">My Collections</h2>
+                            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4">My Collections</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
                                 {myCollections.map(c => (
                                     <div key={c._id} className="mb-5 sm:mb-6">
@@ -176,7 +176,7 @@ export default function CollectionsPage() {
 
                     {sharedCollections.length > 0 && (
                         <section>
-                            <h2 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4">Shared with Me</h2>
+                            <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4">Shared with Me</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
                                 {sharedCollections.map(c => (
                                     <div key={c._id} className="mb-5 sm:mb-6">

@@ -58,7 +58,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         onClick={() => setIsSidebarOpen(false)}
       />
 
-      <div className="flex-1 ml-0 lg:ml-64 flex flex-col min-w-0 overflow-hidden relative bg-muted/20">
+      <div className="flex-1 ml-0 lg:ml-64 flex flex-col min-w-0 overflow-hidden relative bg-background">
         <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto h-full relative">
           {children}

@@ -2,8 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Search, X, Menu, Sun, Moon } from "lucide-react";
+import { Search, X, Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useSearchContext } from "@/lib/context/SearchContext";
+import { useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -13,6 +14,7 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const pathname = usePathname();
+  const { signOut } = useClerk();
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
@@ -46,11 +48,11 @@ export function Navbar({ onMenuClick }: NavbarProps) {
   };
 
   if (!mounted) return (
-    <header className="h-14 bg-card border-b border-border flex items-center px-4 lg:px-6 w-full shrink-0" />
+    <header className="h-14 bg-background border-b border-border flex items-center px-4 lg:px-6 w-full shrink-0" />
   );
 
   return (
-    <header className="h-14 bg-card border-b border-border flex items-center px-4 lg:px-6 sticky top-0 z-20 w-full shrink-0 justify-between gap-4">
+    <header className="h-14 bg-background border-b border-border flex items-center px-4 lg:px-6 sticky top-0 z-20 w-full shrink-0 justify-between gap-4">
       {/* Mobile Menu & Page Title */}
       <div className="flex items-center gap-2 overflow-hidden min-w-0 flex-1 sm:flex-initial">
         <button
@@ -79,7 +81,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               placeholder="Search anything..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-10 pr-20 rounded-full text-sm outline-none border border-border bg-muted hover:bg-muted focus:bg-background focus:border-primary focus:ring-1 focus:ring-ring text-foreground placeholder:text-muted-foreground shadow-sm transition-all duration-200"
+              className="w-full h-10 pl-10 pr-20 rounded-full text-sm outline-none border border-transparent bg-muted hover:bg-muted focus:bg-background focus:border-primary focus:ring-1 focus:ring-ring text-foreground placeholder:text-muted-foreground transition-all duration-300 ease-out"
             />
             
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -115,14 +117,21 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <div className="flex-1 sm:hidden lg:flex" />
       )}
 
-      {/* Theme Toggle */}
-      <div className="flex items-center shrink-0">
+      {/* Right Side Actions */}
+      <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           className="p-2 rounded-lg text-foreground hover:bg-muted transition-colors border border-border"
           title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
         >
           {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+        <button
+          onClick={() => signOut({ redirectUrl: "/" })}
+          className="p-2 rounded-lg text-foreground hover:text-destructive hover:bg-muted transition-colors border border-border"
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
         </button>
       </div>
     </header>

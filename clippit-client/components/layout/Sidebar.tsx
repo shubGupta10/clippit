@@ -64,13 +64,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     return (
       <Link
         href={item.href}
-        className={`group flex items-center gap-3 px-3 py-2 text-[13px] font-medium rounded-lg transition-colors ${
+        className={`group relative flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-out overflow-hidden ${
           active
-            ? "bg-muted text-foreground"
+            ? "bg-muted text-primary"
             : "text-muted-foreground hover:text-foreground hover:bg-muted"
         }`}
       >
-        <span className={`transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}>
+        <span className={`transition-all duration-300 ease-out ${active ? "text-primary scale-110" : "text-muted-foreground group-hover:text-foreground group-hover:scale-110"}`}>
           {item.icon}
         </span>
         <span className="flex-1">{item.label}</span>
@@ -84,7 +84,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <aside
       className={`
-        fixed inset-y-0 left-0 w-64 bg-card border-r border-border flex flex-col z-50
+        fixed inset-y-0 left-0 w-64 bg-background border-r border-border flex flex-col z-50
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
         lg:translate-x-0 lg:shadow-none
@@ -110,7 +110,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Navigation */}
       <nav className="px-3 pt-4 flex-1 flex flex-col gap-6 overflow-y-auto">
         <div className="flex flex-col gap-1">
-          <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          <p className="px-3 mb-1 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
             Main
           </p>
           {mainNav.map((item) => (
@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         <div className="flex flex-col gap-1">
-          <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          <p className="px-3 mb-1 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
             Configure
           </p>
           {settingsNav.map((item) => (
@@ -142,7 +142,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               ) : (
                 <div className="h-7 w-7 rounded-full bg-muted shrink-0" />
               )}
-              <span className="text-[13px] font-medium text-foreground truncate">
+              <span className="text-sm font-medium text-foreground truncate">
                 {user.fullName || user.username || "User"}
               </span>
             </div>
@@ -159,7 +159,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {mounted && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="lg:hidden flex items-center justify-between px-2 py-2 rounded-lg bg-muted text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+            className="lg:hidden flex items-center justify-between px-2 py-2 rounded-lg bg-muted text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <div className="flex items-center gap-2">
               {theme === "dark" ? (

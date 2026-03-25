@@ -1,6 +1,7 @@
 import User from './user.modal';
 import { IUser } from './user.interface';
 import redis from '../../config/redis';
+import clerkClient from '../../config/clerk';
 
 const CACHE_TTL = 3600;
 
@@ -38,7 +39,20 @@ const completeOnboarding = async (clerkId: string) => {
         { onboardingComplete: true },
         { new: true }
     );
-    if (user) await redis.del(`user:profile:${clerkId}`);
+
+    if (user) {
+        await redis.del(`user:profile:${clerkId}`);
+
+        try {
+            await clerkClient.users.updateUserMetadata(clerkId, {
+                publicMetadata: {
+                    onboardingComplete: true
+                }
+            });
+        } catch (error) {
+            console.error("Failed to sync onboarding status to Clerk:", error);
+        }
+    }
 
     return user;
 };

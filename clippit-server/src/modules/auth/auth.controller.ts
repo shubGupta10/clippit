@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Webhook } from "svix";
 import { userService } from "../user/user.service";
 import { AuthRequest, asyncWrapper } from "../../lib/asyncWrapper";
+import clerkClient from "../../config/clerk";
 
 const clerkWebhookHandler = async (req: Request, res: Response) => {
     const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET as string;
@@ -24,6 +25,8 @@ const clerkWebhookHandler = async (req: Request, res: Response) => {
 
     if (event.type === "user.created") {
         const { id, email_addresses, first_name, last_name } = event.data;
+        
+        // Create user in DB
         await userService.createUser({
             clerkId: id,
             email: email_addresses[0].email_address,
@@ -31,6 +34,17 @@ const clerkWebhookHandler = async (req: Request, res: Response) => {
             lastName: last_name,
             onboardingComplete: false,
         });
+
+        // Initialize Clerk metadata
+        try {
+            await clerkClient.users.updateUserMetadata(id, {
+                publicMetadata: {
+                    onboardingComplete: false
+                }
+            });
+        } catch (err) {
+            console.error("Failed to initialize Clerk metadata:", err);
+        }
     }
 
     res.status(200).json({ message: 'ok' });

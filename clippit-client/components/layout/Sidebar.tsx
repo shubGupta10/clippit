@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
+import { useThemeTransition } from "@/lib/hooks/useThemeTransition";
 import { useUser, useClerk } from "@clerk/nextjs";
 import {
   Bookmark,
@@ -32,7 +32,7 @@ interface NavItem {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { toggleTheme, theme } = useThemeTransition();
   const { user } = useUser();
   const { signOut } = useClerk();
 
@@ -158,7 +158,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {mounted && (
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={toggleTheme}
             className="lg:hidden flex items-center justify-between px-2 py-2 rounded-lg bg-muted text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <div className="flex items-center gap-2">

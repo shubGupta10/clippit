@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, X, Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useSearchContext } from "@/lib/context/SearchContext";
 import { useClerk } from "@clerk/nextjs";
-import { useTheme } from "next-themes";
+import { useThemeTransition } from "@/lib/hooks/useThemeTransition";
 import { useEffect, useState } from "react";
 
 interface NavbarProps {
@@ -15,7 +15,7 @@ interface NavbarProps {
 export function Navbar({ onMenuClick }: NavbarProps) {
   const pathname = usePathname();
   const { signOut } = useClerk();
-  const { setTheme, resolvedTheme } = useTheme();
+  const { toggleTheme, theme: resolvedTheme } = useThemeTransition();
   const [mounted, setMounted] = useState(false);
   
   const { 
@@ -120,7 +120,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
       {/* Right Side Actions */}
       <div className="flex items-center gap-2 shrink-0">
         <button
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          onClick={toggleTheme}
           className="p-2 rounded-lg text-foreground hover:bg-muted transition-colors border border-border"
           title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
         >

@@ -1,20 +1,20 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import { Item, GroupedItem } from "@/lib/types";
 import { ItemCard } from "./ItemCard";
 import { EmptyState } from "./EmptyState";
 import { useItems } from "@/lib/hooks/useItems";
 import { useSearchContext } from "@/lib/context/SearchContext";
-import { SearchX, RotateCw, X } from "lucide-react";
+import { SearchX, RotateCw, X, Columns2, LayoutGrid } from "lucide-react";
 
 function SkeletonCard() {
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden animate-pulse break-inside-avoid mb-4 sm:mb-6 inline-block w-full">
       <div className="bg-muted h-36 w-full" />
       <div className="p-3 sm:p-4 space-y-2">
-        <div className="h-3 bg-muted rounded w-3/4" />
-        <div className="h-3 bg-muted rounded w-1/2" />
+        <div className="h-4 bg-muted rounded w-3/4" />
+        <div className="h-4 bg-muted rounded w-1/2" />
       </div>
       <div className="px-3 sm:px-4 py-3 border-t border-border/40 flex items-center gap-2">
         <div className="h-3 w-3 bg-muted rounded-full" />
@@ -28,6 +28,22 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
   const { data: items = [], mutate, isValidating } = useItems().useUserItems(initialItems);
   const { deleteItem, isDeleting } = useItems();
   const { searchResults, isSearching, searchQuery, clearSearch } = useSearchContext();
+
+  const [viewMode, setViewMode] = useState<"vertical" | "horizontal">("vertical");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem("dashboardViewMode");
+    if (saved === "horizontal" || saved === "vertical") {
+      setViewMode(saved);
+    }
+  }, []);
+
+  const handleToggleView = (mode: "vertical" | "horizontal") => {
+    setViewMode(mode);
+    localStorage.setItem("dashboardViewMode", mode);
+  };
 
   const handleRefresh = useCallback(() => {
     mutate();
@@ -52,7 +68,6 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
     } catch (err) {
       console.error("Delete failed", err);
     } finally {
-
       mutate();
     }
   };
@@ -62,6 +77,12 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
   }, [items]);
 
   const isSearchActive = searchQuery.trim().length > 0;
+
+  const gridContainerClass = viewMode === "vertical" 
+    ? "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6" 
+    : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6 items-start";
+
+  if (!mounted) return null; // Avoid hydration mismatch
 
   return (
     <>
@@ -93,21 +114,42 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
           )}
 
           {!isSearchActive && (
-            <button
-              onClick={handleRefresh}
-              disabled={isValidating}
-              title="Refresh"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-all px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[44px] active:scale-95"
-            >
-              <RotateCw className={`h-3.5 w-3.5 ${isValidating ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">{isValidating ? "Refreshing..." : "Refresh"}</span>
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Vertical/Horizontal Flow Toggle */}
+              <div className="flex items-center bg-muted p-1 rounded-lg border border-border">
+                <button
+                  onClick={() => handleToggleView("vertical")}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all text-sm font-medium ${viewMode === "vertical" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Flow Vertically (Masonry Columns)"
+                >
+                  <Columns2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Vertical</span>
+                </button>
+                <button
+                  onClick={() => handleToggleView("horizontal")}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all text-sm font-medium ${viewMode === "horizontal" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Flow Horizontally (Grid Rows)"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  <span className="hidden sm:inline">Horizontal</span>
+                </button>
+              </div>
+              <button
+                onClick={handleRefresh}
+                disabled={isValidating}
+                title="Refresh"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-all px-3 py-2 rounded-lg hover:bg-muted disabled:opacity-50 min-h-[40px] active:scale-95"
+              >
+                <RotateCw className={`h-4 w-4 ${isValidating ? "animate-spin" : ""}`} />
+                <span className="hidden sm:inline">{isValidating ? "Refreshing..." : "Refresh"}</span>
+              </button>
+            </div>
           )}
         </div>
 
         {/* Search skeleton */}
         {isSearching && (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+          <div className={gridContainerClass}>
             {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
@@ -130,11 +172,11 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
 
         {/* Results grid (Search - Flat) */}
         {!isSearching && isSearchActive && searchResults.length > 0 && (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+          <div className={gridContainerClass}>
             {searchResults.map((item, i) => (
               <div
                 key={item._id}
-                className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                className={`${viewMode === "vertical" ? "break-inside-avoid inline-block mb-5 sm:mb-6" : ""} w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both`}
                 style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
               >
                 <ItemCard
@@ -156,11 +198,11 @@ export function ItemGrid({ initialItems }: { initialItems: GroupedItem[] }) {
                   <span className="w-1 h-5 bg-primary/20 rounded-full" />
                   {group.label}
                 </h3>
-                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+                <div className={gridContainerClass}>
                   {group.items.map((item, i) => (
                     <div
                       key={item._id}
-                      className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+                      className={`${viewMode === "vertical" ? "break-inside-avoid inline-block mb-5 sm:mb-6" : ""} w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both`}
                       style={{ animationDelay: `${Math.min(i * 30, 400)}ms` }}
                     >
                       <ItemCard

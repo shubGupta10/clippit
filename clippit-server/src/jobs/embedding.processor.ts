@@ -39,15 +39,37 @@ export const emeddingProcessor = async (job: Job) => {
                 }
             });
             const $ = cheerio.load(response.data as string);
+
+            $('script, style, nav, footer, header, iframe, noscript').remove();
+
             const title = $('title').text().trim();
             const description = $('meta[name="description"]').attr('content')?.trim() || '';
             const ogTitle = $('meta[property="og:title"]').attr('content')?.trim() || '';
             const ogDescription = $('meta[property="og:description"]').attr('content')?.trim() || '';
+            const keywords = $('meta[name="keywords"]').attr('content')?.trim() || '';
 
             pageTitle = ogTitle || title;
             pageDescription = ogDescription || description;
 
-            processedContent = `${pageTitle || ""} ${pageDescription || ""}`.trim();
+            // Extract headings for topic context
+            const headings = $('h1, h2, h3')
+                .map((_, el) => $(el).text().trim())
+                .get()
+                .filter(Boolean)
+                .join(' ');
+
+            // Extract paragraph/article body text (capped at 800 chars)
+            const bodyText = $('article, main, p')
+                .map((_, el) => $(el).text().trim())
+                .get()
+                .filter(Boolean)
+                .join(' ')
+                .slice(0, 800);
+
+            processedContent = [pageTitle, pageDescription, keywords, headings, bodyText]
+                .filter(Boolean)
+                .join(' ')
+                .trim();
 
             if (!processedContent) {
                 processedContent = content;
@@ -57,6 +79,12 @@ export const emeddingProcessor = async (job: Job) => {
             processedContent = content;
         }
     }
+
+    // Enrich with item metadata for better semantic matching
+    const enrichedParts = [processedContent];
+    if (item.note) enrichedParts.push(item.note);
+    if (item.type) enrichedParts.push(`type: ${item.type}`);
+    processedContent = enrichedParts.join(' ').slice(0, 2000);
 
     const [embedding, tags] = await Promise.all([
         generateEmbedding(processedContent),

@@ -32,6 +32,16 @@ const searchItems = async (clerkId: string, { query, limit = 10 }: ISearchQuery)
             },
         },
         {
+            $addFields: {
+                score: { $meta: "vectorSearchScore" }
+            }
+        },
+        {
+            $match: {
+                score: { $gte: 0.40 }
+            }
+        },
+        {
             $project: {
                 _id: 1,
                 type: 1,
@@ -40,13 +50,18 @@ const searchItems = async (clerkId: string, { query, limit = 10 }: ISearchQuery)
                 sourceUrl: 1,
                 tags: 1,
                 note: 1,
+                title: 1,
+                pageTitle: 1,
+                pageDescription: 1,
                 createdAt: 1,
-                score: { $meta: "vectorSearchScore" }
+                score: 1
             },
         },
     ]);
 
-    await redis.set(cacheKey, JSON.stringify(results), "EX", CACHE_TTL);
+    if (results.length > 0) {
+        await redis.set(cacheKey, JSON.stringify(results), "EX", CACHE_TTL);
+    }
 
     return results;
 }

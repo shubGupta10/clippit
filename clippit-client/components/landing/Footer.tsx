@@ -22,6 +22,7 @@ export function Footer() {
         {/* Right Side: Essential Links */}
         <div className="flex items-center gap-6 md:gap-8 text-xs font-semibold uppercase tracking-widest text-muted-foreground/80">
           <Link href="#features" className="hover:text-foreground transition-colors">Features</Link>
+          <Link href="#pricing" className="hover:text-foreground transition-colors">Pricing</Link>
           <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
           <a href="mailto:hello@clippit.app" className="hover:text-foreground transition-colors">Email</a>
         </div>

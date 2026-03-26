@@ -3,7 +3,7 @@ import Link from "next/link";
 const navItems = [
   { label: "How it works", href: "#workflow" },
   { label: "Features", href: "#features" },
-  { label: "Why Clippit", href: "#why-clippit" },
+  { label: "Pricing", href: "#pricing" },
 ];
 
 export function FloatingHeader() {

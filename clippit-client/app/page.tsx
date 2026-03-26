@@ -4,6 +4,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Features } from "@/components/landing/Features";
 import { WhyYouNeed } from "@/components/landing/WhyYouNeed";
 import { Collections } from "@/components/landing/Collections";
+import { Pricing } from "@/components/landing/Pricing";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
@@ -30,6 +31,10 @@ export default function Home() {
         
         <div className="py-20 md:py-28">
           <Collections />
+        </div>
+
+        <div className="py-20 md:py-28">
+          <Pricing />
         </div>
         
         <CTASection />

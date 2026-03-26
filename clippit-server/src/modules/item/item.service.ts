@@ -211,6 +211,20 @@ const deleteAccount = async (clerkId: string) => {
     return user;
 }
 
+const exportItems = async (clerkId: string) => {
+    if (!clerkId) {
+        throw new AppError("Unauthorized", 401)
+    }
+
+    const items = await Item.find({ clerkId })
+        .select("-embeddings")
+        .sort({ createdAt: -1 })
+        .lean();
+
+    return items;
+
+}
+
 export const ItemService = {
     createItem,
     fetchUserItem,
@@ -219,5 +233,6 @@ export const ItemService = {
     updateItemEmbedding,
     editItem,
     clearAllItems,
-    deleteAccount
+    deleteAccount,
+    exportItems
 }

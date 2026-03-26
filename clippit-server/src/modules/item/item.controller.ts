@@ -98,6 +98,24 @@ const deleteAccount = asyncWrapper(
     }
 )
 
+const exportItems = asyncWrapper(
+    async (req: AuthRequest, res: Response) => {
+        const clerkId = req.userId;
+        if (!clerkId) throw new AppError("Unauthorized", 401)
+
+        const items = await ItemService.exportItems(clerkId);
+
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Content-Disposition", "attachment; filename=clippit-export.json");
+
+        res.status(200).json({
+            exportedAt: new Date().toISOString(),
+            total_items: items.length,
+            items
+        })
+    }
+)
+
 export {
     createItem,
     fetchUserItem,
@@ -105,5 +123,6 @@ export {
     deleteItem,
     editItem,
     clearAllItems,
-    deleteAccount
+    deleteAccount,
+    exportItems
 }

@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { useApi } from "@/lib/axios";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Sun, Moon, Monitor, Settings2, UserCircle2, ShieldAlert } from "lucide-react";
+import { Sun, Moon, Monitor, Settings2, UserCircle2, ShieldAlert, Download } from "lucide-react";
 
 import {
   AlertDialog,
@@ -31,6 +31,7 @@ export default function SettingsPage() {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -43,6 +44,27 @@ export default function SettingsPage() {
   const handleModeChange = (mode: "text" | "image" | "link") => {
     setDefaultMode(mode);
     localStorage.setItem("clippit_default_save_mode", mode);
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await api.get("/api/items/export", { responseType: "blob" });
+      const url = URL.createObjectURL(res.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `clippit-export-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Export downloaded successfully");
+    } catch (error) {
+      toast.error("Failed to export data");
+      console.error(error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleClearItems = async () => {
@@ -216,6 +238,26 @@ export default function SettingsPage() {
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="h-px bg-border w-full" />
+
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="max-w-md">
+                  <h3 className="text-[15px] font-semibold text-foreground mb-1">Export Your Data</h3>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">
+                    Download all your saved items as a JSON file. Includes links, text, images, tags, and notes.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleExport}
+                  disabled={isExporting}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-muted hover:bg-accent rounded-xl border border-border text-[13px] font-bold text-foreground transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed w-fit shrink-0"
+                >
+                  <Download className="w-4 h-4" />
+                  {isExporting ? "Exporting..." : "Export All Items"}
+                </button>
               </div>
             </div>
           </section>

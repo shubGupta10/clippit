@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth";
-import { createItem, fetchUserItem, getItemById, deleteItem, editItem, clearAllItems, deleteAccount } from "../../modules/item/item.controller";
+import { createItem, fetchUserItem, getItemById, deleteItem, editItem, clearAllItems, deleteAccount, exportItems } from "../../modules/item/item.controller";
 
 const router = Router();
 
@@ -26,6 +26,12 @@ router.delete(
     "/delete-account",
     requireAuth,
     deleteAccount
+)
+
+router.get(
+    "/export",
+    requireAuth,
+    exportItems
 )
 
 router.get(

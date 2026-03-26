@@ -17,7 +17,7 @@ function BookmarkletForm() {
   const initialText = searchParams.get("text") || "";
 
   const [mode, setMode] = useState<SaveMode>(initialText ? "text" : "link");
-  
+
   const [textContent, setTextContent] = useState(initialText);
   const [imageUrl, setImageUrl] = useState("");
   const [linkUrl, setLinkUrl] = useState(initialUrl);
@@ -37,15 +37,29 @@ function BookmarkletForm() {
   }
 
   if (!userId) {
+    const handleSignIn = () => {
+      window.open(
+        `${window.location.origin}/sign-in`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    };
+
     return (
       <div className="flex flex-col h-full w-full items-center justify-center p-8 text-center gap-4">
         <div className="bg-muted p-4 rounded-full">
           <X className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h2 className="text-xl font-semibold text-foreground">Not signed in</h2>
-        <p className="text-sm text-muted-foreground">
-          Please sign in to Clippit in your main browser window to save items.
+        <h2 className="text-xl font-semibold text-foreground">Session expired</h2>
+        <p className="text-sm text-muted-foreground max-w-[280px]">
+          Sign in to Clippit in your browser, then click the bookmarklet again.
         </p>
+        <button
+          onClick={handleSignIn}
+          className="mt-1 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:shadow-md hover:-translate-y-0.5 transition-all active:scale-95"
+        >
+          Sign in to Clippit
+        </button>
       </div>
     );
   }

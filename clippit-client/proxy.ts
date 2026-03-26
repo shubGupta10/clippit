@@ -5,12 +5,14 @@ const isPublicRoute = createRouteMatcher([
     '/',
     '/sign-in(.*)',
     '/sign-up(.*)',
+    '/bookmarklet(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
     const { userId } = await auth();
+    const isBookmarklet = request.nextUrl.pathname.startsWith('/bookmarklet');
 
-    if (userId && isPublicRoute(request)) {
+    if (userId && isPublicRoute(request) && !isBookmarklet) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     if (!userId && !isPublicRoute(request)) {

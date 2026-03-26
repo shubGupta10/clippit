@@ -43,12 +43,17 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 const startServer = async () => {
-    await connectToDb();
-    await connectRedis();
-    await import('./jobs/embedding.worker');
-
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
+    });
+
+    await Promise.all([
+        connectToDb(),
+        connectRedis()
+    ]);
+
+    import('./jobs/embedding.worker').catch(err => {
+        console.error('Failed to start embedding worker:', err);
     });
 };
 

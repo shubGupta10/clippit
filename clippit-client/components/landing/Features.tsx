@@ -31,8 +31,8 @@ export function Features() {
       className: "col-span-1 md:col-span-1 lg:col-span-2",
     },
     {
-      title: "Stays useful over time",
-      body: "Your library grows with you. Something saved six months ago is just as easy to find today.",
+      title: "Export your data",
+      body: "Download everything you've saved as a clean JSON file. Your data is always yours.",
       className: "col-span-1 md:col-span-1 lg:col-span-2",
     },
   ];

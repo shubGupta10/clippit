@@ -8,13 +8,14 @@ const freePlanFeatures = [
   "Team collaboration",
   "Browser bookmarklet",
   "Auto-tagging",
+  "Export data as JSON",
 ];
 
 const proPlanFeatures = [
   "Everything in Free",
   "More saves per month",
   "Priority support",
-  "Export your data",
+  "Export as CSV & Markdown",
   "More features based on user feedback",
 ];
 

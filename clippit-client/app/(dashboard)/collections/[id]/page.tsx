@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronLeft, Share2, Users, AlertCircle, FolderHeart } from "lucide-react";
+import { ChevronLeft, Share2, Users, AlertCircle, FolderHeart, SearchX } from "lucide-react";
 
 import { useCollections } from "@/lib/hooks/useCollections";
 import { useInvites } from "@/lib/hooks/useInvites";
@@ -14,6 +14,7 @@ import { Collection } from "@/lib/types";
 import { ItemCard } from "@/components/items/ItemCard";
 import { ShareModal } from "@/components/collections/ShareModal";
 import { MemberAvatar } from "@/components/collections/MemberAvatar";
+import { useSearchContext } from "@/lib/context/SearchContext";
 
 export default function CollectionDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -25,6 +26,8 @@ export default function CollectionDetailPage() {
 
     const { data: collection, mutate, isLoading: isFetching, error: fetchError } = useCollectionDetail(id);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    
+    const { searchQuery, isSearching, searchResults, clearSearch } = useSearchContext();
 
     const handleShare = async (email: string) => {
         try {
@@ -85,11 +88,18 @@ export default function CollectionDetailPage() {
     const isOwner = collection.owner.clerkId === user?.id;
     const memberCount = collection.members.length + 1;
 
+    const isSearchActive = searchQuery.trim().length > 0;
+    
+    // Determine which items to show: if searching, intersect global results with this collection's items
+    const displayedItems = isSearchActive
+        ? searchResults.filter(result => collection.itemIds.some(item => item._id === result._id))
+        : collection.itemIds;
+
     return (
         <div className="p-4 sm:p-6 max-w-[1600px] mx-auto w-full">
             {/* Header Area */}
             <div className="flex flex-col gap-6 mb-8 lg:mb-10">
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex flex-col gap-4">
                         <button
                             onClick={() => router.push("/collections")}
@@ -157,8 +167,15 @@ export default function CollectionDetailPage() {
                 </div>
 
                 {/* Subtitle / Description if any */}
-                <div className="text-[13px] text-muted-foreground font-medium border-t border-border pt-4">
-                    {collection.itemIds.length} {collection.itemIds.length === 1 ? "item" : "items"} saved in this collection
+                <div className="text-[13px] text-muted-foreground font-medium border-t border-border pt-4 flex items-center justify-between">
+                    <span>
+                        {collection.itemIds.length} {collection.itemIds.length === 1 ? "item" : "items"} saved in this collection
+                    </span>
+                    {isSearchActive && (
+                        <span>
+                            {displayedItems.length} result{displayedItems.length !== 1 ? "s" : ""} found
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -173,9 +190,25 @@ export default function CollectionDetailPage() {
                         Add items to this collection from your Dashboard or use the browser extension.
                     </p>
                 </div>
+            ) : isSearchActive && displayedItems.length === 0 ? (
+                <div className="flex flex-col items-center justify-center min-h-[40vh] text-center p-8 w-full max-w-md mx-auto">
+                    <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mb-6">
+                        <SearchX className="w-10 h-10 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground mb-2 tracking-tight">No results in collection</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                        Nothing matched &ldquo;{searchQuery}&rdquo; in {collection.name}. Let's clear your search and try again.
+                    </p>
+                    <button
+                        onClick={clearSearch}
+                        className="text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-lg transition-colors"
+                    >
+                        Clear Search
+                    </button>
+                </div>
             ) : (
                 <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
-                    {collection.itemIds.map((item, index) => (
+                    {displayedItems.map((item, index) => (
                         <div 
                             key={item._id || `item-${index}`} 
                             className="break-inside-avoid mb-5 sm:mb-6 inline-block w-full animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"

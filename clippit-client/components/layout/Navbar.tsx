@@ -28,7 +28,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
 
   useEffect(() => setMounted(true), []);
 
-  const isDashboard = pathname === "/dashboard";
+  const isSearchablePage = pathname === "/dashboard" || (pathname.startsWith("/collections/") && pathname.split("/").length > 2);
   const isActive = searchQuery.length > 0;
   const resultCount = searchResults.length;
 
@@ -67,8 +67,8 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         </h1>
       </div>
 
-      {/* Search Bar - Only on Dashboard */}
-      {isDashboard ? (
+      {/* Search Bar */}
+      {isSearchablePage ? (
         <div className="flex flex-1 max-w-lg mx-auto px-2 sm:px-4">
           <div className="relative group w-full">
             <Search

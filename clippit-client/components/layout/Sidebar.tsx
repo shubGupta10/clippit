@@ -49,8 +49,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { href: "/collections", label: "Collections", icon: <FolderHeart className="h-[18px] w-[18px]" /> },
   ];
 
-  const settingsNav: NavItem[] = [
+  const configureNav: NavItem[] = [
     { href: "/setup", label: "Setup", icon: <Wrench className="h-[18px] w-[18px]" /> },
+  ];
+
+  const settingsNav: NavItem[] = [
     { href: "/settings", label: "Settings", icon: <Settings2 className="h-[18px] w-[18px]" /> },
   ];
 
@@ -119,6 +122,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex flex-col gap-1">
           <p className="px-3 mb-1 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
             Configure
+          </p>
+          {configureNav.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p className="px-3 mb-1 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+            Settings
           </p>
           {settingsNav.map((item) => (
             <NavLink key={item.href} item={item} />

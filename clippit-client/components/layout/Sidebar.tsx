@@ -93,9 +93,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Logo */}
       <div className="px-5 flex items-center justify-between h-14 shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="bg-muted rounded-lg p-1.5">
-            <Bookmark className="h-4 w-4 text-primary" />
-          </div>
+          <img src="/favicon-32x32.png" alt="Clippit Logo" className="w-6 h-6 shrink-0" />
           <span className="text-lg font-bold text-foreground tracking-tight">Clippit</span>
         </Link>
         <button

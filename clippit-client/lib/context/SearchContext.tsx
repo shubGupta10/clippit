@@ -25,7 +25,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: searchResults = [], isLoading: isSearching } = useSWR(
+  const { data: searchResults = [], isValidating, isLoading } = useSWR(
     debouncedQuery.trim() ? ["/api/search", debouncedQuery] : null,
     async ([url, query]: [string, string]) => {
       const res = await api.post(url, { query });
@@ -34,8 +34,13 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     {
       revalidateOnFocus: false,
       dedupingInterval: 10000,
+      keepPreviousData: false,
     }
   );
+
+  // Consider it searching only if there is an active query
+  const isSearching = searchQuery.trim().length > 0 && 
+                      (isLoading || isValidating || searchQuery !== debouncedQuery);
 
   const clearSearch = useCallback(() => {
     setSearchQuery("");

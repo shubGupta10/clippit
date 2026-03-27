@@ -46,7 +46,8 @@ export default function SaveManuallyPage() {
       toast.success("Item saved successfully!");
       router.push("/dashboard");
     } catch (err: any) {
-      toast.error(err.message || "An unexpected error occurred");
+      const errorMessage = err.response?.data?.message || err.message || "An unexpected error occurred";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

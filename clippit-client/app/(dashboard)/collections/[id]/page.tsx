@@ -16,6 +16,22 @@ import { ShareModal } from "@/components/collections/ShareModal";
 import { MemberAvatar } from "@/components/collections/MemberAvatar";
 import { useSearchContext } from "@/lib/context/SearchContext";
 
+function SkeletonCard() {
+  return (
+    <div className="bg-card border border-border rounded-lg overflow-hidden animate-pulse break-inside-avoid mb-5 sm:mb-6 inline-block w-full">
+      <div className="bg-muted h-36 w-full" />
+      <div className="p-3 sm:p-4 space-y-2">
+        <div className="h-4 bg-muted rounded w-3/4" />
+        <div className="h-4 bg-muted rounded w-1/2" />
+      </div>
+      <div className="px-3 sm:px-4 py-3 border-t border-border/40 flex items-center gap-2">
+        <div className="h-3 w-3 bg-muted rounded-full" />
+        <div className="h-3 bg-muted rounded w-24" />
+      </div>
+    </div>
+  );
+}
+
 export default function CollectionDetailPage() {
     const { id } = useParams<{ id: string }>();
     const { user, isLoaded } = useUser();
@@ -180,7 +196,11 @@ export default function CollectionDetailPage() {
             </div>
 
             {/* Content Area */}
-            {collection.itemIds.length === 0 ? (
+            {isSearching ? (
+                <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-5 sm:gap-6">
+                    {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+                </div>
+            ) : collection.itemIds.length === 0 ? (
                 <div className="flex flex-col items-center justify-center min-h-[40vh] bg-card rounded-2xl text-center p-8">
                     <div className="bg-muted p-4 rounded-full mb-4">
                         <FolderHeart className="w-8 h-8 text-primary" />

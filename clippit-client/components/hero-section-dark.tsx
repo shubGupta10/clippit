@@ -88,16 +88,16 @@ const HeroImage = ({ light, dark }: { light: string; dark: string }) => {
         )}
         style={{ transform, transformStyle: "preserve-3d" }}
       >
-        <div 
-          className="absolute inset-0 bg-primary/20 blur-[100px] -z-10 transition-opacity duration-500" 
-          style={{ opacity: isHovered ? 0.5 : 0 }} 
+        <div
+          className="absolute inset-0 bg-primary/20 blur-[100px] -z-10 transition-opacity duration-500"
+          style={{ opacity: isHovered ? 0.5 : 0 }}
         />
         <div className="w-full overflow-hidden rounded-xl md:rounded-[1.5rem] border border-border/50 bg-background shadow-inner relative">
           <div className="absolute top-0 inset-x-0 h-10 bg-muted/30 border-b border-border/50 flex items-center px-4 gap-2 backdrop-blur-md z-10">
             <div className="flex gap-2">
-               <div className="w-2.5 h-2.5 rounded-full bg-border" />
-               <div className="w-2.5 h-2.5 rounded-full bg-border" />
-               <div className="w-2.5 h-2.5 rounded-full bg-border" />
+              <div className="w-2.5 h-2.5 rounded-full bg-border" />
+              <div className="w-2.5 h-2.5 rounded-full bg-border" />
+              <div className="w-2.5 h-2.5 rounded-full bg-border" />
             </div>
           </div>
           <img src={light} className="w-full object-cover dark:hidden" alt="Dashboard preview" />
@@ -112,13 +112,13 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
   (
     {
       className,
-      title = "Now in Beta",
+      title = "Early Access",
       subtitle = {
-        regular: "Your personal library",
-        gradient: "for everything you find.",
+        regular: "Save anything from the web",
+        gradient: "Find it when you need it.",
       },
       description =
-        "You come across good things every day, from sharp headlines to product pages and images that stop your scroll. Clippit saves it all and brings it back when you need it.",
+      "You come across good things every day. Articles, designs, links, images. Clippit saves them in one place so you can actually find them later.",
       ctaText = "Start saving",
       ctaHref = "/sign-up",
       bottomImage = {

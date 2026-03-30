@@ -12,4 +12,10 @@ router.put(
     userController.completeOnboarding
 );
 
+router.get(
+    "/usage-limits",
+    requireAuth,
+    userController.getUsageLimits
+);
+
 export default router;

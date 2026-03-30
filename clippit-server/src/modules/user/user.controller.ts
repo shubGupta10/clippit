@@ -14,7 +14,13 @@ const getMe = asyncWrapper(async (req: AuthRequest, res: Response) => {
     res.json({ success: true, data: user });
 });
 
+const getUsageLimits = asyncWrapper(async (req: AuthRequest, res: Response) => {
+    const limits = await userService.usageLimits(req.userId!);
+    res.json({ success: true, data: limits });
+});
+
 export const userController = {
     completeOnboarding,
     getMe,
+    getUsageLimits
 };

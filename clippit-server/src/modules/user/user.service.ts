@@ -2,6 +2,11 @@ import User from './user.modal';
 import { IUser } from './user.interface';
 import redis from '../../config/redis';
 import clerkClient from '../../config/clerk';
+import Item from '../item/item.model';
+import Collection from '../collection/collection.model';
+import { PLANS } from '../../config/plan';
+
+type PlanKey = keyof typeof PLANS;
 
 const CACHE_TTL = 3600;
 
@@ -62,9 +67,38 @@ const deleteUserByClerkId = async (clerkId: string) => {
     await redis.del(`user:profile:${clerkId}`);
 };
 
+const usageLimits = async (clerkId: string) => {
+    const user = await getUserByClerkId(clerkId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const planKey = (user.plan as PlanKey) || "free";
+    const planConfig = PLANS[planKey];
+
+    const itemUsage = await Item.countDocuments({ clerkId: user.clerkId });
+    const collectionUsage = await Collection.countDocuments({ owner: user._id });
+    const sharedCollectionUsage = await Collection.countDocuments({ members: user._id });
+
+    return {
+        usage: {
+            saves: itemUsage,
+            collections: collectionUsage,
+            sharedCollections: sharedCollectionUsage
+        },
+        limits: {
+            maxSaves: planConfig.maxSaves,
+            maxCollections: planConfig.maxCollections,
+            maxSharedCollections: planConfig.maxSharedCollections
+        },
+        plan: planKey
+    }
+}
+
 export const userService = {
     createUser,
     getUserByClerkId,
     completeOnboarding,
     deleteUserByClerkId,
+    usageLimits
 };

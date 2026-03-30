@@ -43,6 +43,14 @@ export interface User {
   email: string;
   firstName?: string;
   lastName?: string;
+  plan: string;
+  subscription: {
+    status: string;
+    planId: string;
+    subscriptionId: string;
+    currentPeriodStart: string;
+    currentPeriodEnd: string;
+  };
   role: string;
   onboardingComplete: boolean;
   createdAt: string;

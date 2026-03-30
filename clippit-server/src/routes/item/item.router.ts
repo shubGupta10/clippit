@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth";
 import { createItem, fetchUserItem, getItemById, deleteItem, editItem, clearAllItems, deleteAccount, exportItems } from "../../modules/item/item.controller";
+import { checkSaveLimit, checkExportFormat } from "../../middleware/checkLimits";
 
 const router = Router();
 
 router.post(
     "/create-item",
     requireAuth,
+    checkSaveLimit,
     createItem
 )
 
@@ -31,6 +33,7 @@ router.delete(
 router.get(
     "/export",
     requireAuth,
+    checkExportFormat,
     exportItems
 )
 

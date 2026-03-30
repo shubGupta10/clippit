@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IUser } from './user.interface';
-import { UserRole } from './user.enum';
+import { PlanStatus, UserRole } from './user.enum';
+import { UserPlan } from './user.enum';
 
 export interface IUserDocument extends IUser, Document { }
 
@@ -21,6 +22,30 @@ const UserSchema = new Schema<IUserDocument>(
         },
         lastName: {
             type: String
+        },
+        plan: {
+            type: String,
+            enum: Object.values(UserPlan),
+            default: UserPlan.FREE
+        },
+        subscription: {
+            status: {
+                type: String,
+                enum: Object.values(PlanStatus),
+                default: PlanStatus.INACTIVE
+            },
+            planId: {
+                type: String,
+            },
+            subscriptionId: {
+                type: String,
+            },
+            currentPeriodStart: {
+                type: Date,
+            },
+            currentPeriodEnd: {
+                type: Date,
+            }
         },
         role: {
             type: String,

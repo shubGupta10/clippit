@@ -57,8 +57,14 @@ const completeOnboarding = async (clerkId: string) => {
     return user;
 };
 
+const deleteUserByClerkId = async (clerkId: string) => {
+    await User.findOneAndDelete({ clerkId });
+    await redis.del(`user:profile:${clerkId}`);
+};
+
 export const userService = {
     createUser,
     getUserByClerkId,
     completeOnboarding,
+    deleteUserByClerkId,
 };

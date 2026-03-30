@@ -2,10 +2,11 @@ import { Router } from "express";
 import { requireAuth } from "../../middleware/auth";
 import { createCollection, getCollections, getCollectionById, addItemToCollection, removeItemFromCollection, deleteCollection } from "../../modules/collection/collection.controller";
 import { sendInvites } from "../../modules/invites/invites.controller";
+import { checkCollectionLimit } from "../../middleware/checkLimits";
 
 const router = Router();
 
-router.post("/create", requireAuth, createCollection);
+router.post("/create", requireAuth, checkCollectionLimit, createCollection);
 router.get("/", requireAuth, getCollections);
 router.get("/:id", requireAuth, getCollectionById);
 router.patch("/:id/add-item", requireAuth, addItemToCollection);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { usePlanLimits } from "@/lib/hooks/usePlanLimits";
 
 interface CreateCollectionModalProps {
     isOpen: boolean;
@@ -12,10 +13,14 @@ interface CreateCollectionModalProps {
 export function CreateCollectionModal({ isOpen, onClose, onSubmit }: CreateCollectionModalProps) {
     const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const { checkLimit } = usePlanLimits();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) return;
+
+        // Check plan limits before continuing
+        if (!checkLimit('collections')) return;
 
         setIsLoading(true);
         try {

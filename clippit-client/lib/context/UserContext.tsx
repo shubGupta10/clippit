@@ -1,10 +1,13 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useUser as useClerkUser } from "@clerk/nextjs";
 import { useApi } from "@/lib/axios";
 import { User } from "@/lib/types";
 import { useSWRAuth } from "@/lib/hooks/useSWRAuth";
+import { UpgradeModal } from "@/components/layout/UpgradeModal";
+
+export type UpgradeReason = 'saves' | 'collections' | 'sharedCollections' | 'export';
 
 interface UserContextType {
   user: User | null;
@@ -13,6 +16,11 @@ interface UserContextType {
   isLoaded: boolean;
   refreshUser: () => void;
   completeOnboarding: () => Promise<void>;
+  // Upgrade Modal state
+  isUpgradeModalOpen: boolean;
+  upgradeReason: UpgradeReason | null;
+  openUpgradeModal: (reason: UpgradeReason) => void;
+  closeUpgradeModal: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,6 +28,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const { user: clerkUser, isLoaded } = useClerkUser();
   const api = useApi();
+
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState<UpgradeReason | null>(null);
 
   const { data: user, isLoading: loading, mutate: refreshUser } = useSWRAuth<User>(
     isLoaded && clerkUser ? "/api/user/get-me" : null
@@ -35,6 +46,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const openUpgradeModal = (reason: UpgradeReason) => {
+    setUpgradeReason(reason);
+    setIsUpgradeModalOpen(true);
+  };
+
+  const closeUpgradeModal = () => {
+    setIsUpgradeModalOpen(false);
+    setUpgradeReason(null);
+  };
+
   return (
     <UserContext.Provider value={{ 
       user: user || null, 
@@ -42,9 +63,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       clerkUser, 
       isLoaded, 
       refreshUser, 
-      completeOnboarding 
+      completeOnboarding,
+      isUpgradeModalOpen,
+      upgradeReason,
+      openUpgradeModal,
+      closeUpgradeModal
     }}>
       {children}
+      <UpgradeModal />
     </UserContext.Provider>
   );
 }

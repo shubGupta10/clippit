@@ -1,6 +1,7 @@
 import { Invite } from "@/lib/types";
 import { CheckCircle2, XCircle, MailOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePlanLimits } from "@/lib/hooks/usePlanLimits";
 
 interface PendingInvitesProps {
     invites: Invite[];
@@ -9,7 +10,14 @@ interface PendingInvitesProps {
 }
 
 export function PendingInvites({ invites, onAccept, onDecline }: PendingInvitesProps) {
+    const { checkLimit } = usePlanLimits();
+
     if (!invites || invites.length === 0) return null;
+
+    const handleAccept = async (id: string) => {
+        if (!checkLimit('sharedCollections')) return;
+        await onAccept(id);
+    };
 
     return (
         <div className="mb-8">
@@ -36,7 +44,7 @@ export function PendingInvites({ invites, onAccept, onDecline }: PendingInvitesP
 
                         <div className="flex gap-2">
                             <Button
-                                onClick={() => onAccept(invite._id)}
+                                onClick={() => handleAccept(invite._id)}
                                 className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 h-9"
                                 size="sm"
                             >

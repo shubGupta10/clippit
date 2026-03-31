@@ -18,6 +18,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePlanLimits } from "@/lib/hooks/usePlanLimits";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -35,6 +36,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { toggleTheme, theme } = useThemeTransition();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const { usageData, isLoading: usageLoading } = usePlanLimits();
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -81,6 +83,30 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
         )}
       </Link>
+    );
+  };
+
+  const UsageMeter = ({ label, current, max }: { label: string, current: number, max: number }) => {
+    const percentage = Math.min((current / max) * 100, 100);
+    const isCritical = percentage >= 90;
+
+    return (
+      <div className="space-y-1.5 px-3 mb-4">
+        <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+          <span className="text-muted-foreground">{label}</span>
+          <span className={isCritical ? "text-destructive" : "text-foreground"}>
+            {current} / {max}
+          </span>
+        </div>
+        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border/50">
+          <div 
+            className={`h-full transition-all duration-1000 ease-out rounded-full ${
+              isCritical ? "bg-destructive" : "bg-primary"
+            }`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+      </div>
     );
   };
 
@@ -136,6 +162,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <NavLink key={item.href} item={item} />
           ))}
         </div>
+
+        {/* Usage Section */}
+        {!usageLoading && usageData && (
+          <div className="mt-auto pt-6 border-t border-border/50">
+            <UsageMeter label="Saves" current={usageData.usage.saves} max={usageData.limits.maxSaves} />
+            <UsageMeter label="Collections" current={usageData.usage.collections} max={usageData.limits.maxCollections} />
+          </div>
+        )}
       </nav>
 
       {/* Footer: user + theme */}

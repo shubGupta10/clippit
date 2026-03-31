@@ -46,12 +46,29 @@ export interface User {
   plan: string;
   subscription: {
     status: string;
-    planId: string;
-    subscriptionId: string;
-    currentPeriodStart: string;
-    currentPeriodEnd: string;
+    planId?: string;
+    subscriptionId?: string;
+    currentPeriodStart?: string;
+    currentPeriodEnd?: string;
   };
   role: string;
   onboardingComplete: boolean;
   createdAt: string;
 }
+
+export interface PlanLimits {
+  maxSaves: number;
+  maxCollections: number;
+  maxSharedCollections: number;
+}
+
+export interface UsageLimits {
+  usage: {
+    saves: number;
+    collections: number;
+    sharedCollections: number;
+  };
+  limits: PlanLimits;
+  plan: string;
+}
+

@@ -2,21 +2,21 @@ import Link from "next/link";
 import { Check, Sparkles, Zap } from "lucide-react";
 
 const freePlanFeatures = [
-  "Unlimited saves",
+  "Up to 100 saves",
+  "3 personal collections",
+  "2 shared collections",
   "AI-powered search",
-  "Smart collections",
-  "Team collaboration",
   "Browser bookmarklet",
-  "Auto-tagging",
   "Export data as JSON",
 ];
 
 const proPlanFeatures = [
   "Everything in Free",
-  "More saves per month",
+  "Unlimited saves",
+  "Unlimited collections",
+  "Unlimited shared collections",
+  "CSV & Markdown export",
   "Priority support",
-  "Export as CSV & Markdown",
-  "More features based on user feedback",
 ];
 
 export function Pricing() {
@@ -145,8 +145,8 @@ export function Pricing() {
         </div>
 
         {/* Bottom note */}
-        <p className="mt-10 text-center text-xs text-muted-foreground/60 font-medium">
-          No credit card required • No usage limits during early access
+        <p className="mt-10 text-center text-[10px] text-muted-foreground/60 font-bold uppercase tracking-[0.2em] animate-in fade-in duration-1000">
+          FREE 100 SAVES • NO CREDIT CARD REQUIRED • PRO COMING SOON
         </p>
       </div>
     </section>

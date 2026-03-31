@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { usePlanLimits } from "@/lib/hooks/usePlanLimits";
 
 type SaveMode = "text" | "image" | "link";
 
@@ -22,9 +23,14 @@ export default function SaveManuallyPage() {
   
   const router = useRouter();
   const api = useApi();
+  const { checkLimit } = usePlanLimits();
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check plan limits before continuing
+    if (!checkLimit('saves')) return;
+
     setIsLoading(true);
 
     try {

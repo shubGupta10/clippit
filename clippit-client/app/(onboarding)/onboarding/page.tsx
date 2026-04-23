@@ -63,7 +63,7 @@ export default function OnboardingPage() {
               You&apos;re all set to start collecting inspiration.
             </p>
           </div>
-          
+
           <div className="p-6 bg-card border border-border rounded-2xl text-left space-y-4 shadow-sm">
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
@@ -72,7 +72,7 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="font-semibold text-foreground">Desktop Optimized</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-1">
-                  On desktop, you can use our bookmarklet to save anything in one click. 
+                  On desktop, you can use our bookmarklet to save anything in one click.
                   On mobile, just use the built-in share sheet!
                 </p>
               </div>
@@ -95,7 +95,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 sm:p-12 lg:p-16 animate-in fade-in duration-700">
       <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-        
+
         {/* Left: Content */}
         <div className="space-y-12">
           <div className="space-y-6">
@@ -121,7 +121,7 @@ export default function OnboardingPage() {
           {step === 1 ? (
             <div className="space-y-8">
               <div className="flex flex-col gap-6">
-                <div 
+                <div
                   className="w-fit"
                   dangerouslySetInnerHTML={{
                     __html: `<a href="${escapedBookmarklet}" draggable="true" style="display:inline-flex;align-items:center;justify-content:center;padding:0 32px;height:56px;background-color:var(--primary);color:var(--primary-foreground);border-radius:16px;font-size:16px;font-weight:700;text-decoration:none;cursor:grab;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);white-space:nowrap;transition:all 0.2s;" onmousedown="this.style.cursor='grabbing';this.style.transform='scale(0.98)'" onmouseup="this.style.cursor='grab';this.style.transform='scale(1)'">Save to Clippit</a>`
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
                     <MousePointer2 className="w-3.5 h-3.5 text-foreground" />
                   </div>
                   <p className="text-sm">
-                    Drag this button to your <span className="text-foreground font-bold">Bookmarks Bar</span>. 
+                    Drag this button to your <span className="text-foreground font-bold">Bookmarks Bar</span>.
                     <br />
                     <span className="text-xs opacity-60">(Press Ctrl+Shift+B if you don&apos;t see it)</span>
                   </p>
@@ -161,66 +161,66 @@ export default function OnboardingPage() {
 
         {/* Right: Illustration/Preview */}
         <div className="relative order-first lg:order-last p-8 flex items-center justify-center group">
-             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-             
-             {step === 1 ? (
-                <div className="relative w-full h-full flex flex-col animate-in slide-in-from-bottom-4 duration-700">
-                  {/* Browser Window Mockup */}
-                  <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden flex flex-col h-full transform transition-transform group-hover:scale-[1.01] duration-500">
-                    {/* Toolbar */}
-                    <div className="bg-muted px-4 py-3 border-b border-border flex items-center gap-4">
-                      <div className="flex gap-1.5 opacity-40">
-                        <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
-                      </div>
-                      <div className="flex-1 h-7 bg-background rounded-lg border border-border flex items-center px-3 gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
-                        <div className="h-1.5 w-24 bg-muted rounded-full" />
-                      </div>
-                    </div>
-                    
-                    {/* Bookmarks Bar */}
-                    <div className="bg-card px-4 py-3 border-b border-border flex items-center gap-4">
-                      <div className="relative">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 rounded-lg border-2 border-primary/30 border-dashed animate-pulse">
-                          <div className="w-2 h-2 bg-primary rounded-sm shrink-0" />
-                          <span className="text-[10px] font-extrabold text-primary uppercase tracking-tight">Drop Bookmarklet Here</span>
-                        </div>
-                        {/* Indicative Arrow (CSS) */}
-                        <div className="absolute -left-12 top-1/2 -translate-y-1/2 hidden lg:block">
-                           <div className="w-8 h-px bg-primary/40 relative">
-                              <div className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-primary/40" />
-                           </div>
-                        </div>
-                      </div>
-                      <div className="h-4 w-12 bg-muted rounded-md opacity-40" />
-                      <div className="h-4 w-16 bg-muted rounded-md opacity-40" />
-                    </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
 
-                    {/* Page Content Backdrop */}
-                    <div className="flex-1 p-8 space-y-5 bg-background/50">
-                      <div className="h-4 w-2/3 bg-muted rounded-full opacity-40" />
-                      <div className="h-4 w-full bg-muted rounded-full opacity-25" />
-                      <div className="h-4 w-5/6 bg-muted rounded-full opacity-10" />
-                      
-                      <div className="pt-8 flex flex-col items-center justify-center">
-                         <div className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
-                            Browser Window
-                         </div>
+          {step === 1 ? (
+            <div className="relative w-full h-full flex flex-col animate-in slide-in-from-bottom-4 duration-700">
+              {/* Browser Window Mockup */}
+              <div className="bg-card rounded-2xl border border-border shadow-2xl overflow-hidden flex flex-col h-full transform transition-transform group-hover:scale-[1.01] duration-500">
+                {/* Toolbar */}
+                <div className="bg-muted px-4 py-3 border-b border-border flex items-center gap-4">
+                  <div className="flex gap-1.5 opacity-40">
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
+                  </div>
+                  <div className="flex-1 h-7 bg-background rounded-lg border border-border flex items-center px-3 gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary/20" />
+                    <div className="h-1.5 w-24 bg-muted rounded-full" />
+                  </div>
+                </div>
+
+                {/* Bookmarks Bar */}
+                <div className="bg-card px-4 py-3 border-b border-border flex items-center gap-4">
+                  <div className="relative">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 rounded-lg border-2 border-primary/30 border-dashed animate-pulse">
+                      <div className="w-2 h-2 bg-primary rounded-sm shrink-0" />
+                      <span className="text-[10px] font-extrabold text-primary uppercase tracking-tight">Drop Bookmarklet Here</span>
+                    </div>
+                    {/* Indicative Arrow (CSS) */}
+                    <div className="absolute -left-12 top-1/2 -translate-y-1/2 hidden lg:block">
+                      <div className="w-8 h-px bg-primary/40 relative">
+                        <div className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-primary/40" />
                       </div>
                     </div>
                   </div>
+                  <div className="h-4 w-12 bg-muted rounded-md opacity-40" />
+                  <div className="h-4 w-16 bg-muted rounded-md opacity-40" />
                 </div>
-             ) : (
-                <div className="text-center space-y-6 animate-in zoom-in-95 duration-700">
-                  <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
-                    <CheckCircle2 className="w-12 h-12 text-primary" />
+
+                {/* Page Content Backdrop */}
+                <div className="flex-1 p-8 space-y-5 bg-background/50">
+                  <div className="h-4 w-2/3 bg-muted rounded-full opacity-40" />
+                  <div className="h-4 w-full bg-muted rounded-full opacity-25" />
+                  <div className="h-4 w-5/6 bg-muted rounded-full opacity-10" />
+
+                  <div className="pt-8 flex flex-col items-center justify-center">
+                    <div className="text-[11px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+                      Browser Window
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground italic">Bookmarklet added!</h3>
                 </div>
-             )}
-          
+              </div>
+            </div>
+          ) : (
+            <div className="text-center space-y-6 animate-in zoom-in-95 duration-700">
+              <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                <CheckCircle2 className="w-12 h-12 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground italic">Bookmarklet added!</h3>
+            </div>
+          )}
+
           {/* Subtle Glows */}
           <div className="absolute -z-10 -top-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
           <div className="absolute -z-10 -bottom-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />

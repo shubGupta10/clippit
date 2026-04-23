@@ -1,20 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { SearchProvider } from "@/lib/context/SearchContext";
-import { usePathname } from "next/navigation";
+import { useDBUser } from "@/lib/context/UserContext";
+import { useRouter, usePathname } from "next/navigation";
 
 function DashboardContent({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user: dbUser, loading: dbLoading, clerkUser, isLoaded: isClerkLoaded } = useDBUser();
+  const router = useRouter();
   const pathname = usePathname();
 
+  const isMetadataOnboarded = clerkUser?.publicMetadata?.onboardingComplete === true;
   const isCurrentlyOnboarding = pathname === "/onboarding";
 
-  // Onboarding page renders without the dashboard chrome
+  useEffect(() => {
+    if (isClerkLoaded && clerkUser && !dbLoading) {
+      if (!dbUser?.onboardingComplete && !isCurrentlyOnboarding) {
+        router.push("/onboarding");
+      }
+    }
+  }, [dbUser, dbLoading, isClerkLoaded, clerkUser, pathname, router, isCurrentlyOnboarding]);
+
   if (isCurrentlyOnboarding) {
     return <>{children}</>;
+  }
+
+  // Use Clerk metadata as fast signal to skip spinner for returning users
+  if (dbLoading && !isMetadataOnboarded) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (

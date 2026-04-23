@@ -5,8 +5,10 @@ import { ItemType } from "./item.enum";
 import { IItem } from "./item.interface";
 import Item from "./item.model";
 import Collection from "../collection/collection.model";
+import Invites from "../invites/invites.model";
 import { getFriendlyDateLabel } from "./item.utils";
 import redis from "../../config/redis";
+import sanitizeHtml from "sanitize-html"
 
 const CACHE_TTL = 3600;
 
@@ -28,6 +30,10 @@ const createItem = async (data: Partial<IItem>, clerkId: string) => {
     if (!data.sourceUrl?.trim()) {
         throw new AppError('Source URL is required', 400);
     }
+
+    data.content = sanitizeHtml(data.content || "", { allowedTags: [], allowedAttributes: {} });
+    data.note = sanitizeHtml(data.note || '', { allowedTags: [], allowedAttributes: {} });
+    data.title = (data.title || '').replace(/[<>]/g, '');
 
     const existing = await Item.findOne({
         clerkId,
@@ -84,16 +90,21 @@ const fetchUserItem = async (clerkId: string) => {
 
 const getItemById = async (itemId: string, clerkId?: string) => {
     const cacheKey = `item:${itemId}`;
+
+    // Fetch item from cache or DB
+    let item;
     const cacheData = await redis.get(cacheKey);
     if (cacheData) {
-        return JSON.parse(cacheData);
+        item = JSON.parse(cacheData);
+    } else {
+        item = await Item.findById(itemId).select("-embeddings").lean();
+        if (!item) {
+            throw new AppError("Item not found", 404);
+        }
+        await redis.set(cacheKey, JSON.stringify(item), "EX", CACHE_TTL);
     }
 
-    const item = await Item.findById(itemId).select("-embeddings").lean();
-    if (!item) {
-        throw new AppError("Item not found", 404);
-    }
-
+    // Authorization check — always runs, even on cached data
     if (clerkId) {
         const user = await User.findOne({ clerkId });
         if (!user) throw new AppError("User not found", 401);
@@ -105,7 +116,7 @@ const getItemById = async (itemId: string, clerkId?: string) => {
         if (item.collectionId) {
             const collection = await Collection.findById(item.collectionId);
             if (collection) {
-                const isMember = collection.members.some(m => m.toString() === user._id.toString());
+                const isMember = collection.members.some((m: any) => m.toString() === user._id.toString());
                 const isOwner = collection.owner.toString() === user._id.toString();
                 if (isMember || isOwner) return item;
             }
@@ -113,7 +124,6 @@ const getItemById = async (itemId: string, clerkId?: string) => {
         throw new AppError("Unauthorized", 401);
     }
 
-    await redis.set(cacheKey, JSON.stringify(item), "EX", CACHE_TTL);
     return item;
 };
 
@@ -144,9 +154,9 @@ const editItem = async (
     }
 
     const updatedData: Partial<IItem> = {};
-    if (data.note !== undefined) updatedData.note = data.note.trim();
+    if (data.note !== undefined) updatedData.note = sanitizeHtml(data.note.trim(), { allowedTags: [], allowedAttributes: {} });
 
-    if (data.tags !== undefined) updatedData.tags = data.tags.map(t => t.trim());
+    if (data.tags !== undefined) updatedData.tags = data.tags.map(t => t.trim().replace(/[<>]/g, ''));
 
     const item = await Item.findOneAndUpdate(
         { _id: ItemId, clerkId },
@@ -204,9 +214,40 @@ const deleteAccount = async (clerkId: string) => {
         throw new AppError("Unauthorized", 401)
     }
 
-    await Item.deleteMany({ clerkId });
-    const user = await User.findOneAndDelete({ clerkId });
+    const user = await User.findOne({ clerkId });
     if (!user) throw new AppError("User not found", 404);
+
+    // Delete all items
+    await Item.deleteMany({ clerkId });
+
+    // Delete collections owned by user and unlink items from them
+    const ownedCollections = await Collection.find({ owner: user._id });
+    for (const col of ownedCollections) {
+        await Item.updateMany({ collectionId: col._id }, { $unset: { collectionId: "" } });
+    }
+    await Collection.deleteMany({ owner: user._id });
+
+    // Remove user from all shared collections
+    await Collection.updateMany(
+        { members: user._id },
+        { $pull: { members: user._id } }
+    );
+
+    // Clean up invites (sent and received)
+    await Invites.deleteMany({
+        $or: [
+            { owner: user._id.toString() },
+            { inviteeEmail: user.email }
+        ]
+    });
+
+    // Delete user record
+    await User.findOneAndDelete({ clerkId });
+
+    // Clear all related caches
+    await redis.del(`user:profile:${clerkId}`);
+    await redis.del(`item:feed:${clerkId}`);
+    await redis.del(`collections:list:${clerkId}`);
 
     return user;
 }

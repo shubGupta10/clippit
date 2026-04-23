@@ -1,13 +1,19 @@
 import { Response } from "express";
 import { asyncWrapper, AuthRequest } from "../../lib/asyncWrapper";
 import { collectionService } from "./collection.service";
+import AppError from "../../lib/AppError";
+import { CreateCollectionSchema, CollectionItemSchema } from "../../lib/validations";
 
 const createCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
-        const { name } = req.body;
 
-        const collection = await collectionService.createCollection(name, userId!);
+        const parsed = CreateCollectionSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.issues[0].message, 400);
+        }
+
+        const collection = await collectionService.createCollection(parsed.data.name, userId!);
 
         res.status(201).json({
             success: true,
@@ -50,9 +56,13 @@ const addItemToCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
         const collectionId = req.params.id;
-        const { itemId } = req.body
 
-        const collection = await collectionService.addItemToCollection(userId!, collectionId as string, itemId as string);
+        const parsed = CollectionItemSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.issues[0].message, 400);
+        }
+
+        const collection = await collectionService.addItemToCollection(userId!, collectionId as string, parsed.data.itemId);
 
         res.status(200).json({
             success: true,
@@ -66,9 +76,13 @@ const removeItemFromCollection = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
         const collectionId = req.params.id;
-        const { itemId } = req.body
 
-        const collection = await collectionService.removeItemFromCollection(userId!, collectionId as string, itemId as string);
+        const parsed = CollectionItemSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.issues[0].message, 400);
+        }
+
+        const collection = await collectionService.removeItemFromCollection(userId!, collectionId as string, parsed.data.itemId);
 
         res.status(200).json({
             success: true,

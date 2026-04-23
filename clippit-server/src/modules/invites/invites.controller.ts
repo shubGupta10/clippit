@@ -1,14 +1,20 @@
 import { Response } from "express";
 import { asyncWrapper, AuthRequest } from "../../lib/asyncWrapper";
 import { invitesService } from "./invites.service";
+import AppError from "../../lib/AppError";
+import { SendInviteSchema } from "../../lib/validations";
 
 const sendInvites = asyncWrapper(
     async (req: AuthRequest, res: Response) => {
         const { id: collectionId } = req.params
-        const { email } = req.body
         const userId = req.userId;
 
-        await invitesService.sendInvite(userId!, collectionId as string, email);
+        const parsed = SendInviteSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.issues[0].message, 400);
+        }
+
+        await invitesService.sendInvite(userId!, collectionId as string, parsed.data.email);
 
         res.status(200).json({
             success: true,

@@ -25,27 +25,22 @@ const sendInvite = async (userId: string, collectionId: string, email: string) =
         throw new AppError("Only owners can invite", 403)
     }
 
+    const invitee = await User.findOne({ email });
+    if (invitee) {
+        if (invitee._id.toString() === user._id.toString()) return { message: "Invite sent" };
+        if (collection.members.some(memberId => memberId.toString() === invitee._id.toString())) {
+            return { message: "Invite sent" };
+        }
+    }
+
     const existingInvite = await Invites.findOne({
         collectionId: collectionId,
         inviteeEmail: email,
         status: "pending"
     })
 
-    if (existingInvite) {
-        throw new AppError("Invite already sent", 400)
-    }
-
-    const invitee = await User.findOne({ email });
-
-    if (invitee) {
-        if (invitee._id.toString() === user._id.toString()) {
-            throw new AppError("You cannot invite yourself", 400)
-        }
-
-        if (collection.members.some(memberId => memberId.toString() === invitee._id.toString())) {
-            throw new AppError("User is already a member", 400)
-        }
-    }
+    // Silently succeed if invite already pending (prevents enumeration)
+    if (existingInvite) return { message: "Invite sent" };
 
     const invite = await Invites.create({
         collectionId: collectionId,

@@ -2,15 +2,22 @@ import { Response } from "express";
 import { asyncWrapper, AuthRequest } from "../../lib/asyncWrapper";
 import AppError from "../../lib/AppError";
 import { ItemService } from "./item.service";
+import { CreateItemSchema, EditItemSchema } from "../../lib/validations";
+import { IItem } from "./item.interface";
 
 const createItem = asyncWrapper(async (req: AuthRequest, res: Response) => {
     const clerkId = req.userId;
     if (!clerkId) throw new AppError('Unauthorized', 401);
 
+    const parsed = CreateItemSchema.safeParse(req.body);
+    if (!parsed.success) {
+        throw new AppError(parsed.error.issues[0].message, 400);
+    }
+
     const itemData = {
-        ...req.body,
+        ...parsed.data,
         clerkId,
-    };
+    } as Partial<IItem>;
 
     const item = await ItemService.createItem(itemData, clerkId);
     res.status(201).json({ success: true, data: item });
@@ -59,7 +66,12 @@ const editItem = asyncWrapper(
         const clerkId = req.userId;
         if (!clerkId) throw new AppError("Unauthorized", 401)
 
-        const items = await ItemService.editItem(req.params.id as string, clerkId, req.body)
+        const parsed = EditItemSchema.safeParse(req.body);
+        if (!parsed.success) {
+            throw new AppError(parsed.error.issues[0].message, 400);
+        }
+
+        const items = await ItemService.editItem(req.params.id as string, clerkId, parsed.data)
 
         res.status(200).json({
             success: true,

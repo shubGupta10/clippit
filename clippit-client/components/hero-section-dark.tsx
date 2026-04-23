@@ -112,14 +112,14 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
   (
     {
       className,
-      title = "Early Access",
+      title = "Free during early access",
       subtitle = {
-        regular: "Save anything from the web",
+        regular: "Save anything from the web.",
         gradient: "Find it when you need it.",
       },
       description =
-      "You come across good things every day. Articles, designs, links, images. Clippit saves them in one place so you can actually find them later.",
-      ctaText = "Start saving",
+      "You bookmark 50 things a week and never find any of them. Clippit saves links, images, and text from any page, then finds them instantly with AI search.",
+      ctaText = "Start saving for free",
       ctaHref = "/sign-up",
       bottomImage = {
         light: "https://farmui.vercel.app/dashboard-light.png",
@@ -151,7 +151,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
 
               <p className="mx-auto max-w-xl md:max-w-3xl text-[15px] md:text-lg leading-relaxed md:leading-8 text-muted-foreground/80 md:text-muted-foreground px-4 md:px-0">
                 <span className="md:hidden">
-                  Clippit saves the links, pages, and images that stop your scroll. Access them instantly, anywhere.
+                  Save links, images, and text from any page. Find them later with AI search. No folders, no mess.
                 </span>
                 <span className="hidden md:inline">
                   {description}
@@ -159,13 +159,36 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
               </p>
             </div>
 
-            <div className="mt-6 sm:mt-8">
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center gap-4">
               <Link
                 href={ctaHref}
-                className="inline-flex rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+                className="inline-flex rounded-full bg-foreground px-8 py-4 text-base font-bold text-background transition-all hover:scale-105 active:scale-95 shadow-lg"
               >
                 {ctaText}
               </Link>
+              <Link
+                href="#workflow"
+                className="inline-flex rounded-full border border-border px-6 py-4 text-base font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/40"
+              >
+                See how it works
+              </Link>
+            </div>
+
+            <p className="mt-5 text-xs text-muted-foreground/60 font-medium">
+              No credit card needed. Set up in 30 seconds.
+            </p>
+
+            {/* Social proof */}
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <div className="flex -space-x-2">
+                <img src="https://i.pravatar.cc/150?img=12" alt="" className="w-8 h-8 rounded-full border-2 border-background object-cover" />
+                <img src="https://i.pravatar.cc/150?img=32" alt="" className="w-8 h-8 rounded-full border-2 border-background object-cover" />
+                <img src="https://i.pravatar.cc/150?img=45" alt="" className="w-8 h-8 rounded-full border-2 border-background object-cover" />
+                <img src="https://i.pravatar.cc/150?img=68" alt="" className="w-8 h-8 rounded-full border-2 border-background object-cover" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Joined by <span className="text-foreground font-medium">200+ creators</span> in early access
+              </p>
             </div>
 
             {/* {bottomImage && <HeroImage light={bottomImage.light} dark={bottomImage.dark} />} */}

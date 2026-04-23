@@ -2,6 +2,7 @@ import { FloatingHeader } from "@/components/floating-header";
 import { HeroSection } from "@/components/hero-section-dark";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Features } from "@/components/landing/Features";
+import { MidPageCTA } from "@/components/landing/MidPageCTA";
 import { WhyYouNeed } from "@/components/landing/WhyYouNeed";
 import { Collections } from "@/components/landing/Collections";
 import { Pricing } from "@/components/landing/Pricing";
@@ -24,6 +25,8 @@ export default function Home() {
         <div className="py-16 md:py-24">
           <Features />
         </div>
+
+        <MidPageCTA />
         
         <div className="py-16 md:py-24">
           <WhyYouNeed />

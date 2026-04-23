@@ -1,3 +1,5 @@
+import { Zap, Globe, FolderKanban, Search, Users, Download } from "lucide-react";
+
 export function Features() {
   const primaryFeature = {
     title: "Your library. Always within reach.",
@@ -6,31 +8,37 @@ export function Features() {
 
   const bentoFeatures = [
     {
+      icon: Zap,
       title: "Fast capture",
       body: "Save anything in seconds without breaking what you were doing.",
       className: "col-span-1",
     },
     {
+      icon: Globe,
       title: "Works on every site",
       body: "The bookmarklet works on any website, any browser, any page.",
       className: "col-span-1",
     },
     {
+      icon: FolderKanban,
       title: "Smart collections",
-      body: "Organize content into collections automatically. Share with your team.",
+      body: "Organize content into collections. Share them with your team when you want to.",
       className: "col-span-1",
     },
     {
-      title: "AI-powered search",
-      body: "Find anything instantly with intelligent search that understands context.",
+      icon: Search,
+      title: "AI search",
+      body: "Describe what you're looking for in plain English. Clippit finds it.",
       className: "col-span-1",
     },
     {
+      icon: Users,
       title: "Team collaboration",
-      body: "Invite members, set permissions, and build knowledge together.",
+      body: "Invite people to your collections. They can view, add, and edit. Simple permissions, no complexity.",
       className: "col-span-1 md:col-span-1 lg:col-span-2",
     },
     {
+      icon: Download,
       title: "Export your data",
       body: "Download everything you've saved as a clean JSON file. Your data is always yours.",
       className: "col-span-1 md:col-span-1 lg:col-span-2",
@@ -76,6 +84,9 @@ export function Features() {
               key={feature.title}
               className={`rounded-2xl border border-border/60 bg-card p-8 flex flex-col justify-center hover:bg-muted/30 transition-colors duration-300 ${feature.className}`}
             >
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                <feature.icon className="w-5 h-5 text-primary" />
+              </div>
               <h4 className="text-xl font-semibold text-foreground tracking-tight">
                 {feature.title}
               </h4>

@@ -4,18 +4,21 @@ export function HowItWorks() {
   const steps = [
     {
       number: 1,
+      icon: Bookmark,
       title: "Find something worth saving",
-      description: "Browse and come across valuable content - articles, designs, research."
+      description: "You're browsing and you see something good. An article, a design, a product page. Instead of losing it in 47 open tabs, you save it."
     },
     {
-      number: 2, 
-      title: "Click and save",
-      description: "Use the bookmarklet to save text, images, or entire pages in seconds."
+      number: 2,
+      icon: FolderOpen,
+      title: "Click the bookmarklet",
+      description: "One click from your bookmarks bar. The page, image, or text gets saved to your Clippit library. No copy-pasting, no screenshots."
     },
     {
       number: 3,
-      title: "Find it when you need it",
-      description: "Search by keyword or browse collections to find anything instantly."
+      icon: Search,
+      title: "Search and find it later",
+      description: "Type what you remember in plain English. Clippit uses AI to find the exact thing you saved, even if you forgot the title."
     },
   ];
 
@@ -49,9 +52,9 @@ export function HowItWorks() {
               </div>
               
               <div className="relative z-10">
-                {/* Step pill indicator */}
-                <div className="mb-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-background border border-border font-mono text-base font-semibold text-primary shadow-sm">
-                  0{step.number}
+                {/* Step pill indicator with icon */}
+                <div className="mb-8 inline-flex h-12 w-12 items-center justify-center rounded-full bg-background border border-border shadow-sm">
+                  <step.icon className="w-5 h-5 text-primary" />
                 </div>
                 
                 <h3 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">

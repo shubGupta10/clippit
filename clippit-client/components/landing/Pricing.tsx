@@ -1,28 +1,20 @@
 import Link from "next/link";
-import { Check, Sparkles, Zap } from "lucide-react";
+import { Check, Zap } from "lucide-react";
 
-const freePlanFeatures = [
+const features = [
   "Up to 100 saves",
   "3 personal collections",
   "2 shared collections",
-  "AI-powered search",
+  "AI search",
   "Browser bookmarklet",
   "Export data as JSON",
-];
-
-const proPlanFeatures = [
-  "Everything in Free",
-  "Unlimited saves",
-  "Unlimited collections",
-  "Unlimited shared collections",
-  "CSV & Markdown export",
-  "Priority support",
+  "Invite team members",
 ];
 
 export function Pricing() {
   return (
     <section id="pricing" className="py-24">
-      <div className="mx-auto max-w-5xl px-5 md:px-8">
+      <div className="mx-auto max-w-3xl px-5 md:px-8">
         {/* Section Header */}
         <div className="mb-16 text-center">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -32,43 +24,43 @@ export function Pricing() {
             Free while we build.
           </h2>
           <p className="mt-6 text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Clippit is completely free during early access. A Pro plan with advanced features is on the way.
+            Everything is free during early access. No limits on features, no credit card, no catch. A paid plan will come later with higher limits.
           </p>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+        {/* Single Pricing Card */}
+        <div className="relative rounded-2xl border border-primary/20 bg-card p-8 md:p-12 flex flex-col items-center max-w-lg mx-auto overflow-hidden group">
           
-          {/* Free Plan */}
-          <div className="relative rounded-2xl border border-border/60 bg-card p-8 md:p-10 flex flex-col hover:border-primary/30 transition-all duration-500 group">
-            
+          {/* Subtle gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.06] pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 w-full flex flex-col items-center">
             {/* Badge */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Zap className="w-4.5 h-4.5 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground tracking-tight">Early Access</h3>
+            <div className="flex items-center gap-2.5 mb-8">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Zap className="w-4.5 h-4.5 text-primary" />
               </div>
-              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest">
-                Current
+              <h3 className="text-lg font-bold text-foreground tracking-tight">Early Access</h3>
+              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest ml-2">
+                Free
               </span>
             </div>
 
             {/* Price */}
-            <div className="mb-8">
-              <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-foreground tracking-tight">$0</span>
+            <div className="mb-8 text-center">
+              <div className="flex items-baseline gap-1 justify-center">
+                <span className="text-6xl font-bold text-foreground tracking-tight">$0</span>
                 <span className="text-muted-foreground text-sm font-medium">/month</span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                Free forever during early access
+                No credit card required
               </p>
             </div>
 
             {/* Features */}
-            <ul className="space-y-3.5 mb-10 flex-1">
-              {freePlanFeatures.map((feature) => (
+            <ul className="space-y-3.5 mb-10 w-full max-w-xs">
+              {features.map((feature) => (
                 <li key={feature} className="flex items-center gap-3 text-[14px] text-foreground/80">
                   <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <Check className="w-3 h-3 text-primary" />
@@ -81,72 +73,16 @@ export function Pricing() {
             {/* CTA */}
             <Link
               href="/sign-up"
-              className="w-full inline-flex items-center justify-center rounded-xl bg-foreground text-background py-3.5 text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              className="w-full max-w-xs inline-flex items-center justify-center rounded-xl bg-foreground text-background py-3.5 text-sm font-bold transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
             >
               Get started free
             </Link>
           </div>
-
-          {/* Pro Plan */}
-          <div className="relative rounded-2xl border border-primary/20 bg-card p-8 md:p-10 flex flex-col transition-all duration-500 group overflow-hidden">
-            
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.06] pointer-events-none" />
-            
-            {/* Glow */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 flex flex-col h-full">
-              {/* Badge */}
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
-                    <Sparkles className="w-4.5 h-4.5 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground tracking-tight">Pro</h3>
-                </div>
-                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
-                  Coming soon
-                </span>
-              </div>
-
-              {/* Price */}
-              <div className="mb-8">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-foreground/40 tracking-tight">$—</span>
-                  <span className="text-muted-foreground/50 text-sm font-medium">/month</span>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground/70">
-                  Pricing announced soon
-                </p>
-              </div>
-
-              {/* Features */}
-              <ul className="space-y-3.5 mb-10 flex-1">
-                {proPlanFeatures.map((feature, i) => (
-                  <li key={feature} className={`flex items-center gap-3 text-[14px] ${i === 0 ? "text-foreground/80" : "text-foreground/50"}`}>
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${i === 0 ? "bg-primary/10" : "bg-muted"}`}>
-                      <Check className={`w-3 h-3 ${i === 0 ? "text-primary" : "text-muted-foreground/60"}`} />
-                    </div>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA */}
-              <button
-                disabled
-                className="w-full inline-flex items-center justify-center rounded-xl border border-border bg-muted/50 text-muted-foreground py-3.5 text-sm font-bold cursor-not-allowed opacity-70"
-              >
-                Coming Soon
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Bottom note */}
-        <p className="mt-10 text-center text-[10px] text-muted-foreground/60 font-bold uppercase tracking-[0.2em] animate-in fade-in duration-1000">
-          FREE 100 SAVES • NO CREDIT CARD REQUIRED • PRO COMING SOON
+        <p className="mt-8 text-center text-xs text-muted-foreground/50 font-medium">
+          Pro plan with higher limits coming later. Early access users will get a discount.
         </p>
       </div>
     </section>

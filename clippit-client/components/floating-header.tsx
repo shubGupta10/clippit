@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 
 const navItems = [
   { label: "How it works", href: "#workflow" },
@@ -35,7 +36,7 @@ export function FloatingHeader() {
         <div className="flex flex-1 justify-end items-center gap-2">
           <Link
             href="/sign-in"
-            className="hidden sm:inline-flex rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/40"
+            className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/40"
           >
             Sign in
           </Link>

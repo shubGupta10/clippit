@@ -142,7 +142,7 @@ const HeroSection = React.forwardRef<HTMLDivElement, HeroSectionProps>(
             </div>
 
             <div className="mt-8 md:mt-4 flex flex-col items-center gap-8 md:gap-4 px-1">
-              <h1 className="mx-auto font-serif text-[clamp(2.75rem,12vw,4.2rem)] md:text-[6.5rem] leading-[1.05] md:leading-[1.14] tracking-[-0.05em] text-foreground text-balance md:text-wrap md:pb-3">
+              <h1 className="mx-auto font-serif text-[clamp(2.75rem,12vw,4.2rem)] md:text-[4.5rem] lg:text-[6.5rem] leading-[1.05] md:leading-[1.14] tracking-[-0.05em] text-foreground text-balance md:text-wrap md:pb-3">
                 <span className="block md:whitespace-nowrap">{subtitle.regular}</span>
                 <span className="block pb-[0.1em] md:pb-[0.08em] bg-linear-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent drop-shadow-sm md:whitespace-nowrap">
                   {subtitle.gradient}

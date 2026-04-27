@@ -20,7 +20,7 @@ export function FloatingHeader() {
         </div>
         
         {/* Center: Desktop Nav */}
-        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6">
+        <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-6">
           {navItems.map((item) => (
             <Link
               key={item.label}
@@ -33,16 +33,16 @@ export function FloatingHeader() {
         </div>
         
         {/* Right: Actions */}
-        <div className="flex flex-1 justify-end items-center gap-2">
+        <div className="flex flex-1 justify-end items-center gap-1 sm:gap-2">
           <Link
             href="/sign-in"
-            className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/40"
+            className="rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/40 whitespace-nowrap"
           >
             Sign in
           </Link>
           <Link
             href="/sign-up"
-            className="inline-flex rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-transform hover:scale-105 active:scale-95"
+            className="inline-flex rounded-full bg-foreground px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium text-background transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
           >
             Get started
           </Link>
